@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Blind Stick Monitor</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #050507;
+            --glass-bg: rgba(20, 20, 25, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --neon-blue: #00f2ff;
+            --neon-red: #ff0055;
+            --neon-green: #00ff9d;
+            --text-main: #ffffff;
+            --text-muted: #d1d5db;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --ctrl-height: 44px;
+            --nav-height: 70px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-weight: 500;
+        }
+
+        /* --- 1. CINEMATIC ENTRY SCREEN --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050507;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        
+        .intro-logo svg {
+            width: 120px; height: 120px;
+            fill: none; stroke: var(--neon-green);
+            stroke-width: 4;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLogo 2.5s forwards ease-in-out;
+            margin-bottom: 30px;
+        }
+        
+        .intro-main-title {
+            font-size: 36px; font-weight: 900;
+            background: linear-gradient(to right, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0; animation: fadeUp 1s 0.5s forwards;
+            text-align: center; letter-spacing: -1px; padding: 0 20px;
+        }
+
+        .intro-subtitle {
+            font-size: 14px; color: #888;
+            margin-top: 15px; opacity: 0;
+            animation: fadeUp 1s 1s forwards;
+            max-width: 600px; text-align: center; line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .intro-team-container {
+            margin-top: 40px; height: 40px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .team-name-anim {
+            font-size: 20px; font-weight: 600; color: #fff;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+
+        @keyframes drawLogo { to { stroke-dashoffset: 0; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 2. TOP NAVIGATION BAR --- */
+        .top-nav {
+            height: var(--nav-height);
+            background: rgba(10, 10, 12, 0.9);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(15px);
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        
+        /* Small Logo in Nav */
+        .nav-logo svg {
+            width: 32px; height: 32px;
+            fill: none; stroke: var(--neon-green);
+            stroke-width: 5;
+        }
+
+        .brand-title {
+            font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: white;
+            text-transform: uppercase;
+        }
+
+        /* --- 3. MAIN LAYOUT --- */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 25px;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* User Header Section */
+        .user-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            flex-wrap: wrap; gap: 20px;
+        }
+
+        .greeting h1 { margin: 0; font-size: 28px; font-weight: 800; }
+        .status-badge {
+            font-size: 12px; color: var(--neon-green); 
+            background: rgba(0, 255, 157, 0.1);
+            padding: 4px 10px; border-radius: 6px;
+            border: 1px solid rgba(0, 255, 157, 0.2);
+            font-weight: 700; display: inline-block; margin-top: 5px;
+        }
+
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white; border: none;
+            padding: 10px 20px; border-radius: 10px;
+            font-weight: 600; font-size: 13px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+
+        .lang-select {
+            background: #1a1a1a; color: white; border: 1px solid var(--glass-border);
+            padding: 10px; border-radius: 10px; font-size: 13px; cursor: pointer;
+        }
+
+        .icon-btn {
+            width: 40px; height: 40px; background: #1a1a1a;
+            border: 1px solid var(--glass-border); border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            color: white; position: relative; cursor: pointer;
+        }
+        .notification-dot {
+            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+            background: var(--neon-red); border-radius: 50%;
+        }
+
+        /* --- 4. GRID SYSTEM (FIXED) --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 Columns Desktop */
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-title {
+            font-size: 12px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .metric { font-size: 38px; font-weight: 800; color: white; margin-bottom: 5px; }
+        .unit { font-size: 13px; color: var(--text-muted); }
+
+        /* Grid Placements */
+        .stat-card { grid-column: span 1; }
+        .feed-card { grid-column: span 2; height: 320px; display: flex; flex-direction: column; }
+        .log-card { grid-column: span 2; height: 320px; display: flex; flex-direction: column; }
+        .map-card { grid-column: span 4; height: 500px; padding: 0; } /* Full Width Map */
+
+        /* --- MOBILE RESPONSIVE FIX --- */
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr 1fr; }
+            .stat-card { grid-column: span 1; }
+            .feed-card, .log-card, .map-card { grid-column: span 2; }
+        }
+
+        @media (max-width: 600px) {
+            .main-grid { display: flex; flex-direction: column; }
+            .user-header { flex-direction: column; align-items: flex-start; }
+            .header-controls { width: 100%; justify-content: space-between; }
+            .brand-title { font-size: 16px; }
+        }
+
+        /* --- WIDGETS --- */
+        
+        /* Map */
+        #map { width: 100%; height: 100%; border-radius: 20px; filter: grayscale(100%) invert(92%) contrast(88%); transition: filter 0.3s; }
+        /* Normal Mode Filter Reset */
+        #map.normal-mode { filter: none; }
+
+        .map-overlay-controls {
+            position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;
+        }
+        .map-btn {
+            background: white; color: black; border: none;
+            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .directions-btn {
+            position: absolute; bottom: 20px; left: 20px;
+            background: var(--neon-blue); color: black;
+            padding: 12px 24px; border-radius: 30px; font-weight: 800;
+            cursor: pointer; border: none; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.4);
+        }
+
+        /* Video */
+        .video-box {
+            flex: 1; background: black; border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #333;
+        }
+        .video-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* --- FIXED BADGE POSITION (MOVED TO RIGHT) --- */
+        .rec-badge {
+            position: absolute; top: 15px; right: 15px; /* Changed from Left to Right */
+            background: rgba(0,0,0,0.8); padding: 5px 10px;
+            border-radius: 6px; color: white; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 10;
+        }
+        .rec-dot { width: 8px; height: 8px; background: #ff0055; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 8px #ff0055; }
+        .video-placeholder {
+            height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: #555;
+        }
+
+        /* Logs */
+        .log-box {
+            flex: 1; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 15px;
+            font-family: monospace; color: var(--neon-green); overflow-y: auto; font-size: 13px;
+        }
+        .log-line { margin-bottom: 8px; }
+
+        /* Alerts */
+        .alert-box {
+            grid-column: span 4; display: none; padding: 15px; border-radius: 12px;
+            text-align: center; font-weight: 700; animation: slideDown 0.4s;
+        }
+        .alert-red { background: rgba(255, 0, 85, 0.2); border: 1px solid rgba(255, 0, 85, 0.5); color: #ff9eb5; }
+        .alert-orange { background: rgba(255, 165, 0, 0.2); border: 1px solid rgba(255, 165, 0, 0.5); color: #ffeebb; }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- ABOUT MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #121214; border: 1px solid var(--glass-border);
+            width: 90%; max-width: 600px; border-radius: 24px; padding: 40px;
+            position: relative; max-height: 90vh; overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 24px;
+        }
+        .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .team-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- INTRO OVERLAY -->
+    <div id="intro-overlay">
+        <div class="intro-logo">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" />
+                <path d="M50 20 L50 80 M20 50 L80 50" stroke-linecap="round" />
+                <circle cx="50" cy="50" r="15" fill="var(--neon-green)" stroke="none" />
+            </svg>
+        </div>
+        <div class="intro-main-title">Smart Blind Stick Monitor</div>
+        <div class="intro-subtitle">A Multifunctional Smart Stick With Environmental And Technical Intelligence</div>
+        
+        <div class="intro-team-container">
+            <div id="teamNameDisplay" class="team-name-anim"></div>
+        </div>
+    </div>
+
+    <!-- TOP NAV -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" />
+                    <path d="M50 20 L50 80 M20 50 L80 50" stroke-linecap="round" />
+                    <circle cx="50" cy="50" r="15" fill="var(--neon-green)" stroke="none" />
+                </svg>
+            </div>
+            <div class="brand-title">Smart Blind Stick Monitor</div>
+        </div>
+    </nav>
+
+    <!-- ABOUT MODAL -->
+    <div id="aboutModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAbout()">&times;</span>
+            <h2 style="margin-top:0;">Project Details</h2>
+            <p style="color: var(--neon-green); font-size: 12px; font-weight: 700; letter-spacing: 1px;">VISVESVARAYA TECHNOLOGICAL UNIVERSITY</p>
+            <h3 style="margin: 10px 0;">The Oxford College of Engineering</h3>
+            <p style="color: #888; font-size: 13px;">Dept of Electronics and Communication Engineering</p>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin: 20px 0;">
+                <div style="font-size: 11px; color: #666; font-weight: 700;">PROJECT TITLE</div>
+                <div style="font-weight: 600; margin-top: 5px;">"A Multifunctional Smart Stick With Environmental And Technical Intelligence"</div>
+            </div>
+
+            <div style="text-align: left; margin-bottom: 20px;">
+                <div style="font-size: 11px; color: #666; font-weight: 700;">GUIDED BY</div>
+                <div style="font-weight: 700; font-size: 16px; margin-top: 2px;">Ms. Tina Elizabeth Thomas</div>
+                <div style="font-size: 13px; color: #888;">Assistant Professor</div>
+            </div>
+
+            <div style="text-align: left;">
+                <div style="font-size: 11px; color: #666; font-weight: 700; margin-bottom: 8px;">TEAM MEMBERS</div>
+                <div class="team-grid">
+                    <div class="team-card">Pavithra T <br><span style="color:#777; font-size:11px;">1OX22EC065</span></div>
+                    <div class="team-card">Punya K V <br><span style="color:#777; font-size:11px;">1OX22EC074</span></div>
+                    <div class="team-card">Salma <br><span style="color:#777; font-size:11px;">1OX22EC086</span></div>
+                    <div class="team-card">Spoorthi M <br><span style="color:#777; font-size:11px;">1OX22EC102</span></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; pt: 20px; border-top: 1px solid #333; font-size: 14px; color: #aaa;">
+                Special Thanks to <br>
+                <strong style="color: var(--neon-blue);">Dr. Manju Devi, HOD, ECE</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="dashboard-container">
+        
+        <!-- USER HEADER -->
+        <div class="user-header">
+            <div class="greeting">
+                <h1 id="txt-greeting">Hello, Guardian</h1>
+                <span class="status-badge">● System Active</span>
+            </div>
+            <div class="header-controls">
+                <select class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <div class="icon-btn">
+                    <i class="far fa-bell"></i>
+                    <div class="notification-dot"></div>
+                </div>
+                <button class="btn-primary" onclick="openAbout()">
+                    <i class="fas fa-users"></i> <span id="txt-about">About Team</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ALERTS -->
+        <div id="fallAlert" class="alert-box alert-red">
+            <i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span>
+        </div>
+        <div id="obsAlert" class="alert-box alert-orange">
+            <i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span>
+        </div>
+
+        <!-- GRID -->
+        <div class="main-grid">
+            <!-- SENSORS -->
+            <div class="card stat-card">
+                <div class="card-title">
+                    <span id="lbl-prox">Proximity</span> <i class="fas fa-ruler-horizontal" style="color: var(--neon-blue)"></i>
+                </div>
+                <div class="metric" id="distVal">--</div>
+                <div class="unit" id="unit-prox">Centimeters</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="card-title">
+                    <span id="lbl-tilt">Stick Tilt</span> <i class="fas fa-compress-arrows-alt" style="color: var(--neon-green)"></i>
+                </div>
+                <div class="metric" id="tiltVal">--</div>
+                <div class="unit">m/s²</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="card-title">
+                    <span id="lbl-sync">Last Sync</span> <i class="fas fa-clock"></i>
+                </div>
+                <div class="metric" style="font-size: 28px;" id="timeVal">--:--</div>
+                <div class="unit">Live Data</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="card-title">
+                    <span id="lbl-cam">Camera</span> <i class="fas fa-video"></i>
+                </div>
+                <div class="metric" style="font-size: 24px; color: #777;" id="camStatusText">OFFLINE</div>
+                <div class="unit">System Status</div>
+            </div>
+
+            <!-- VIDEO FEED -->
+            <div class="card feed-card">
+                <div class="card-title"><span id="lbl-feed">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
+                <div class="video-box">
+                    <div class="rec-badge"><div class="rec-dot"></div> REC</div>
+                    <img id="liveFeed" class="video-img" src="" style="display:none;" onload="this.style.display='block'; document.getElementById('vPlace').style.display='none';">
+                    <div id="vPlace" class="video-placeholder">
+                        <i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <span style="font-size: 12px;">Waiting for Signal...</span>
+                    </div>
+                </div>
+                <div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div>
+            </div>
+
+            <!-- LOGS -->
+            <div class="card log-card">
+                <div class="card-title"><span id="lbl-ocr">Detected Signboards</span> <i class="fas fa-align-left"></i></div>
+                <div class="log-box" id="camText">
+                    <div class="log-line">> System Initialized...</div>
+                    <div class="log-line">> Waiting for data stream...</div>
+                </div>
+            </div>
+
+            <!-- MAP -->
+            <div class="card map-card">
+                <div id="map"></div>
+                <div class="map-overlay-controls">
+                    <button class="map-btn" onclick="toggleMapTheme()" id="btn-map-mode">
+                        <i class="fas fa-adjust"></i> Map Mode
+                    </button>
+                </div>
+                <button class="directions-btn" onclick="getDirections()">
+                    <i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- TRANSLATIONS ---
+        const translations = {
+            en: {
+                greeting: "Hello, Guardian",
+                about: "About Team",
+                fall: "EMERGENCY: FALL DETECTED",
+                obs: "CAUTION: OBSTACLE AHEAD",
+                prox: "Proximity",
+                tilt: "Stick Tilt",
+                sync: "Last Sync",
+                cam: "Camera",
+                feed: "Live Visual Feed",
+                ocr: "Detected Signboards",
+                dir: "Get Directions",
+                u_cm: "Centimeters"
+            },
+            kn: {
+                greeting: "ನಮಸ್ಕಾರ, ರಕ್ಷಕರೆ",
+                about: "ತಂಡದ ಬಗ್ಗೆ",
+                fall: "ತುರ್ತು: ಬಿದ್ದುಹೋಗಿದೆ",
+                obs: "ಎಚ್ಚರಿಕೆ: ಮುಂದೆ ತಡೆ ಇದೆ",
+                prox: "ಸಾಮೀಪ್ಯ",
+                tilt: "ಕೋಲು ಓರೆ",
+                sync: "ಕೊನೆಯ ಸಿಂಕ್",
+                cam: "ಕ್ಯಾಮೆರಾ",
+                feed: "ದೃಶ್ಯ ಫೀಡ್",
+                ocr: "ಪತ್ತೆಯಾದ ಫಲಕಗಳು",
+                dir: "ದಾರಿ ತೋರಿಸಿ",
+                u_cm: "ಸೆಂಟಿಮೀಟರ್‌ಗಳು"
+            },
+            hi: {
+                greeting: "नमस्ते, अभिभावक",
+                about: "टीम के बारे में",
+                fall: "आपातकालीन: गिर गया",
+                obs: "सावधान: आगे बाधा है",
+                prox: "निकटता",
+                tilt: "छड़ी का झुकाव",
+                sync: "अंतिम सिंक",
+                cam: "कैमरा",
+                feed: "दृश्य फ़ीड",
+                ocr: "पहचाने गए साइनबोर्ड",
+                dir: "दिशा प्राप्त करें",
+                u_cm: "सेंटीमीटर"
+            }
+        };
+
+        function changeLanguage(lang) {
+            const t = translations[lang];
+            document.getElementById('txt-greeting').innerText = t.greeting;
+            document.getElementById('txt-about').innerText = t.about;
+            document.getElementById('txt-fall').innerText = t.fall;
+            document.getElementById('txt-obs').innerText = t.obs;
+            document.getElementById('lbl-prox').innerText = t.prox;
+            document.getElementById('lbl-tilt').innerText = t.tilt;
+            document.getElementById('lbl-sync').innerText = t.sync;
+            document.getElementById('lbl-cam').innerText = t.cam;
+            document.getElementById('lbl-feed').innerText = t.feed;
+            document.getElementById('lbl-ocr').innerText = t.ocr;
+            document.getElementById('btn-dir').innerText = t.dir;
+            document.getElementById('unit-prox').innerText = t.u_cm;
+        }
+
+        // --- INTRO ANIMATION ---
+        const teamMembers = ["Pavithra T", "Punya K V", "Salma", "Spoorthi M"];
+        window.addEventListener('load', async () => {
+            const nameContainer = document.getElementById('teamNameDisplay');
+            const overlay = document.getElementById('intro-overlay');
+            await new Promise(r => setTimeout(r, 2500));
+            for (let name of teamMembers) {
+                nameContainer.innerText = name;
+                nameContainer.style.opacity = '1';
+                await new Promise(r => setTimeout(r, 1000));
+                nameContainer.style.opacity = '0';
+                await new Promise(r => setTimeout(r, 500));
+            }
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
+        });
+
+        // --- MAP LOGIC ---
+        let map, marker, currentStickLocation = { lat: 0, lng: 0 };
+        
+        function initMap() {
+            const darkStyle = [
+                { elementType: "geometry", stylers: [{ color: "#212121" }] },
+                { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+                { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+                { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
+                { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
+                { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] },
+                { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] }
+            ];
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15, center: { lat: 12.9716, lng: 77.5946 },
+                mapId: "DEMO_MAP_ID",
+                styles: darkStyle,
+                disableDefaultUI: true, zoomControl: true
+            });
+            marker = new google.maps.Marker({ map: map, animation: google.maps.Animation.DROP });
+        }
+
+        function toggleMapTheme() {
+            const mapDiv = document.getElementById('map');
+            if (mapDiv.classList.contains('normal-mode')) {
+                mapDiv.classList.remove('normal-mode');
+                document.getElementById('btn-map-mode').innerHTML = '<i class="fas fa-adjust"></i> Map Mode';
+            } else {
+                mapDiv.classList.add('normal-mode');
+                document.getElementById('btn-map-mode').innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+        }
+
+        function getDirections() {
+            if (currentStickLocation.lat !== 0) {
+                const url = `https://www.google.com/maps/dir/?api=1&destination=${currentStickLocation.lat},${currentStickLocation.lng}`;
+                window.open(url, '_blank');
+            } else { alert("Waiting for location data..."); }
+        }
+
+        function openAbout() { document.getElementById('aboutModal').style.display = 'flex'; setTimeout(() => document.getElementById('aboutModal').style.opacity = '1', 10); }
+        function closeAbout() { document.getElementById('aboutModal').style.opacity = '0'; setTimeout(() => document.getElementById('aboutModal').style.display = 'none', 300); }
+
+        // --- FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7eSOarDDbx5aMU5kc5PxyeL7INzT5hHQ",
+            authDomain: "smartstickmonitor.firebaseapp.com",
+            projectId: "smartstickmonitor",
+            storageBucket: "smartstickmonitor.firebasestorage.app",
+            messagingSenderId: "743018101420",
+            appId: "1:743018101420:web:83202fa94c39b474627d09",
+            measurementId: "G-ZENJQ28RFR"
+        };
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+            db.collection("devices").doc("stick_user_1").onSnapshot((doc) => {
+                if (doc.exists) updateDashboard(doc.data());
+            });
+        } catch (e) { console.error(e); }
+
+        function updateDashboard(data) {
+            // CM Conversion
+            if (data.distance) {
+                document.getElementById("distVal").innerText = (data.distance / 10).toFixed(1);
+            } else { document.getElementById("distVal").innerText = "--"; }
+            
+            document.getElementById("tiltVal").innerText = data.tilt ? data.tilt.toFixed(2) : "0.00";
+            if(data.lastUpdated) document.getElementById("timeVal").innerText = data.lastUpdated.toDate().toLocaleTimeString();
+
+            // Alerts
+            document.getElementById("fallAlert").style.display = data.isFall ? "block" : "none";
+            document.getElementById("obsAlert").style.display = (data.distance < 300) ? "block" : "none";
+
+            // Map
+            if(map && marker && data.lat && data.lat !== 0) {
+                const pos = { lat: data.lat, lng: data.lon };
+                currentStickLocation = pos;
+                marker.setPosition(pos); map.panTo(pos);
+            }
+
+            // Camera
+            const camStatusText = document.getElementById("camStatusText");
+            if (data.cameraActive) {
+                camStatusText.innerText = "ONLINE"; camStatusText.style.color = "var(--neon-green)";
+                if (data.detectedText && data.detectedText.trim() !== "") {
+                    const entry = document.createElement('div');
+                    entry.className = 'log-line';
+                    entry.innerHTML = `> ${data.detectedText}`;
+                    const terminal = document.getElementById("camText");
+                    terminal.prepend(entry);
+                    if(terminal.children.length > 20) terminal.lastChild.remove();
+                }
+            } else {
+                camStatusText.innerText = "OFFLINE"; camStatusText.style.color = "#777";
+            }
+
+            // Feed
+            if (data.cameraFrameUrl && data.cameraFrameUrl.startsWith("http")) {
+                const img = document.getElementById("liveFeed");
+                if(img.src !== data.cameraFrameUrl) {
+                    img.src = data.cameraFrameUrl;
+                    if(data.lastFrameTime) document.getElementById("feedTime").innerText = "Last Frame: " + data.lastFrameTime.toDate().toLocaleTimeString();
+                }
+            }
+        }
+    </script>
+
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7eSOarDDbx5aMU5kc5PxyeL7INzT5hHQ&callback=initMap&loading=async"></script>
+</body>
+</html>
