@@ -16,12 +16,12 @@
 
     <style>
         :root {
-            --bg-color: #050507;
             --glass-bg: rgba(20, 20, 25, 0.95);
             --glass-border: rgba(255, 255, 255, 0.15);
             --neon-blue: #00f2ff;
             --neon-red: #ff0055;
             --neon-green: #00ff9d;
+            --neon-yellow: #ffcc00;
             --text-main: #ffffff;
             --text-muted: #d1d5db;
             --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
@@ -35,7 +35,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            background-color: #050507;
             color: var(--text-main);
             overflow-x: hidden;
             min-height: 100vh;
@@ -44,59 +44,28 @@
             font-weight: 500;
         }
 
-        /* --- 1. CINEMATIC ENTRY SCREEN --- */
-        #intro-overlay {
+        /* --- BACKGROUND --- */
+        .ambient-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050507;
-            z-index: 9999;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15), transparent 40%);
+            z-index: -1;
+        }
+
+        /* --- LAYOUT --- */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+            width: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease-out, visibility 0.8s;
-        }
-        
-        .intro-logo svg {
-            width: 120px; height: 120px;
-            fill: none; stroke: var(--neon-green);
-            stroke-width: 4;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: drawLogo 2.5s forwards ease-in-out;
-            margin-bottom: 30px;
-        }
-        
-        .intro-main-title {
-            font-size: 36px; font-weight: 900;
-            background: linear-gradient(to right, #fff, #a5b4fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0; animation: fadeUp 1s 0.5s forwards;
-            text-align: center; letter-spacing: -1px; padding: 0 20px;
+            gap: 30px;
         }
 
-        .intro-subtitle {
-            font-size: 14px; color: #888;
-            margin-top: 15px; opacity: 0;
-            animation: fadeUp 1s 1s forwards;
-            max-width: 600px; text-align: center; line-height: 1.6;
-            padding: 0 20px;
-        }
-
-        .intro-team-container {
-            margin-top: 40px; height: 40px;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        .team-name-anim {
-            font-size: 20px; font-weight: 600; color: #fff;
-            opacity: 0; transition: opacity 0.5s ease;
-        }
-
-        @keyframes drawLogo { to { stroke-dashoffset: 0; } }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- 2. TOP NAVIGATION BAR --- */
+        /* --- TOP NAV BAR --- */
         .top-nav {
             height: var(--nav-height);
             background: rgba(10, 10, 12, 0.9);
@@ -113,7 +82,6 @@
 
         .nav-left { display: flex; align-items: center; gap: 15px; }
         
-        /* Small Logo in Nav */
         .nav-logo svg {
             width: 32px; height: 32px;
             fill: none; stroke: var(--neon-green);
@@ -125,174 +93,190 @@
             text-transform: uppercase;
         }
 
-        /* --- 3. MAIN LAYOUT --- */
-        .dashboard-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 25px;
-            width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* User Header Section */
-        .user-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 30px;
+        /* --- USER HEADER --- */
+        header {
             background: var(--glass-bg);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            flex-wrap: wrap; gap: 20px;
+            border-radius: 24px;
+            padding: 20px 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .greeting h1 { margin: 0; font-size: 28px; font-weight: 800; }
+        .header-left h1 {
+            margin: 0; font-size: 32px; font-weight: 800; color: white;
+            letter-spacing: -1px;
+        }
         .status-badge {
             font-size: 12px; color: var(--neon-green); 
-            background: rgba(0, 255, 157, 0.1);
-            padding: 4px 10px; border-radius: 6px;
-            border: 1px solid rgba(0, 255, 157, 0.2);
-            font-weight: 700; display: inline-block; margin-top: 5px;
+            background: rgba(0, 255, 157, 0.15);
+            padding: 5px 12px; border-radius: 8px;
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            font-weight: 800; letter-spacing: 0.5px;
+            margin-top: 8px; display: inline-block;
         }
 
-        .header-controls { display: flex; align-items: center; gap: 15px; }
+        .header-right { 
+            display: flex; align-items: center; gap: 15px; 
+        }
 
-        /* Buttons */
+        .control-group {
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0 5px; border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            height: var(--ctrl-height);
+        }
+
+        .lang-select {
+            background: transparent; color: #fff; border: none;
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+            height: 100%; padding: 0 15px; cursor: pointer; outline: none;
+        }
+        .lang-select option { background: #1a1a1a; color: white; padding: 10px; }
+
+        .icon-btn {
+            width: 40px; height: 100%; 
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 10px; cursor: pointer; color: #fff;
+            position: relative; transition: background 0.2s;
+        }
+        .icon-btn:hover { background: rgba(255, 255, 255, 0.15); }
+        .notification-dot {
+            position: absolute; top: 10px; right: 10px; width: 8px; height: 8px;
+            background: var(--neon-red); border-radius: 50%; border: 2px solid #222;
+        }
+
         .btn-primary {
             background: var(--accent-gradient);
-            color: white; border: none;
-            padding: 10px 20px; border-radius: 10px;
-            font-weight: 600; font-size: 13px; cursor: pointer;
+            border: none; color: white;
+            padding: 0 24px; height: var(--ctrl-height);
+            border-radius: 12px;
+            font-weight: 700; font-size: 13px;
+            cursor: pointer; transition: transform 0.2s;
             display: flex; align-items: center; gap: 8px;
-            transition: transform 0.2s;
+            white-space: nowrap; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
         .btn-primary:hover { transform: translateY(-2px); }
 
-        .lang-select {
-            background: #1a1a1a; color: white; border: 1px solid var(--glass-border);
-            padding: 10px; border-radius: 10px; font-size: 13px; cursor: pointer;
-        }
-
-        .icon-btn {
-            width: 40px; height: 40px; background: #1a1a1a;
-            border: 1px solid var(--glass-border); border-radius: 10px;
+        .avatar {
+            width: var(--ctrl-height); height: var(--ctrl-height);
+            border-radius: 12px; background: #333;
             display: flex; justify-content: center; align-items: center;
-            color: white; position: relative; cursor: pointer;
-        }
-        .notification-dot {
-            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
-            background: var(--neon-red); border-radius: 50%;
+            font-weight: 800; font-size: 16px; border: 2px solid rgba(255,255,255,0.2);
+            color: #fff;
         }
 
-        /* --- 4. GRID SYSTEM (FIXED) --- */
+        /* --- GRID SYSTEM --- */
         .main-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 Columns Desktop */
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
         }
 
         .card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 25px;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
-        .card-title {
-            font-size: 12px; font-weight: 700; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;
+        .card-header {
             display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
         }
+        .card-label {
+            font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px;
+            color: #aaa; font-weight: 800;
+        }
+        .card-icon { font-size: 18px; color: #fff; opacity: 0.9; }
 
-        .metric { font-size: 38px; font-weight: 800; color: white; margin-bottom: 5px; }
-        .unit { font-size: 13px; color: var(--text-muted); }
+        .metric { 
+            font-size: 42px; font-weight: 900; color: #fff; margin-bottom: 5px; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .unit { font-size: 14px; color: #ddd; font-weight: 600; }
 
-        /* Grid Placements */
+        /* Card Placements */
         .stat-card { grid-column: span 1; }
-        .feed-card { grid-column: span 2; height: 320px; display: flex; flex-direction: column; }
-        .log-card { grid-column: span 2; height: 320px; display: flex; flex-direction: column; }
-        .map-card { grid-column: span 4; height: 500px; padding: 0; } /* Full Width Map */
+        .card-weather { grid-column: span 1; } 
+        .card-map { grid-column: span 4; height: 500px; padding: 0; }
+        .card-feed { grid-column: span 2; height: 350px; display: flex; flex-direction: column; }
+        .card-logs { grid-column: span 2; height: 350px; display: flex; flex-direction: column; }
 
-        /* --- MOBILE RESPONSIVE FIX --- */
-        @media (max-width: 1024px) {
-            .main-grid { grid-template-columns: 1fr 1fr; }
-            .stat-card { grid-column: span 1; }
-            .feed-card, .log-card, .map-card { grid-column: span 2; }
+        /* Alerts */
+        .alert-box {
+            grid-column: span 4; display: none; padding: 20px; border-radius: 20px;
+            text-align: center; font-weight: 800;
+            font-size: 16px; letter-spacing: 0.5px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
+        .alert-red { background: rgba(255, 0, 85, 0.2); border: 2px solid rgba(255, 0, 85, 0.6); color: #ffb3c6; }
+        .alert-orange { background: rgba(255, 165, 0, 0.2); border: 2px solid rgba(255, 165, 0, 0.6); color: #ffeebb; }
 
-        @media (max-width: 600px) {
-            .main-grid { display: flex; flex-direction: column; }
-            .user-header { flex-direction: column; align-items: flex-start; }
-            .header-controls { width: 100%; justify-content: space-between; }
-            .brand-title { font-size: 16px; }
+        /* Weather Specific */
+        .weather-content {
+            display: flex; align-items: center; gap: 15px;
         }
+        .weather-icon { font-size: 36px; color: var(--neon-yellow); }
+        .weather-temp { font-size: 42px; font-weight: 900; color: white; }
+        .weather-desc { font-size: 13px; color: #ccc; font-weight: 600; text-transform: capitalize; }
 
-        /* --- WIDGETS --- */
-        
         /* Map */
-        #map { width: 100%; height: 100%; border-radius: 20px; filter: grayscale(100%) invert(92%) contrast(88%); transition: filter 0.3s; }
-        /* Normal Mode Filter Reset */
+        #map { width: 100%; height: 100%; border-radius: 24px; filter: grayscale(100%) invert(92%) contrast(88%); transition: filter 0.3s; }
         #map.normal-mode { filter: none; }
-
-        .map-overlay-controls {
-            position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;
+        .map-overlay-btn {
+            position: absolute; bottom: 25px; left: 25px;
+            background: white; color: black;
+            padding: 12px 24px; border-radius: 30px;
+            font-weight: 800; font-size: 13px;
+            cursor: pointer; border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 8px;
+            transition: transform 0.2s;
         }
-        .map-btn {
-            background: white; color: black; border: none;
-            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px;
-            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .directions-btn {
-            position: absolute; bottom: 20px; left: 20px;
-            background: var(--neon-blue); color: black;
-            padding: 12px 24px; border-radius: 30px; font-weight: 800;
-            cursor: pointer; border: none; display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.4);
+        .map-overlay-btn:hover { transform: scale(1.05); }
+        .map-toggle-btn {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(0,0,0,0.8); color: white; border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer;
         }
 
         /* Video */
-        .video-box {
-            flex: 1; background: black; border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #333;
+        .video-container {
+            flex: 1; background: #000; border-radius: 16px;
+            position: relative; overflow: hidden; border: 1px solid #444;
         }
-        .video-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* --- FIXED BADGE POSITION (MOVED TO RIGHT) --- */
+        .live-feed-img { width: 100%; height: 100%; object-fit: cover; }
         .rec-badge {
-            position: absolute; top: 15px; right: 15px; /* Changed from Left to Right */
+            position: absolute; top: 15px; right: 15px;
             background: rgba(0,0,0,0.8); padding: 5px 10px;
             border-radius: 6px; color: white; font-size: 11px; font-weight: 700;
             display: flex; align-items: center; gap: 8px;
             border: 1px solid rgba(255,255,255,0.2);
-            z-index: 10;
         }
         .rec-dot { width: 8px; height: 8px; background: #ff0055; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 8px #ff0055; }
-        .video-placeholder {
-            height: 100%; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; color: #555;
-        }
-
+        
         /* Logs */
-        .log-box {
-            flex: 1; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 15px;
-            font-family: monospace; color: var(--neon-green); overflow-y: auto; font-size: 13px;
+        .log-terminal {
+            flex: 1; background: rgba(0,0,0,0.4);
+            border-radius: 16px; padding: 20px;
+            font-family: monospace; font-size: 14px; color: var(--neon-green);
+            font-weight: 600; line-height: 1.6;
+            overflow-y: auto; border: 1px solid rgba(255,255,255,0.08);
         }
-        .log-line { margin-bottom: 8px; }
 
-        /* Alerts */
-        .alert-box {
-            grid-column: span 4; display: none; padding: 15px; border-radius: 12px;
-            text-align: center; font-weight: 700; animation: slideDown 0.4s;
-        }
-        .alert-red { background: rgba(255, 0, 85, 0.2); border: 1px solid rgba(255, 0, 85, 0.5); color: #ff9eb5; }
-        .alert-orange { background: rgba(255, 165, 0, 0.2); border: 1px solid rgba(255, 165, 0, 0.5); color: #ffeebb; }
-
-        @keyframes blink { 50% { opacity: 0.5; } }
-        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* --- ABOUT MODAL --- */
+        /* Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 2000;
@@ -301,34 +285,35 @@
         }
         .modal-content {
             background: #121214; border: 1px solid var(--glass-border);
-            width: 90%; max-width: 600px; border-radius: 24px; padding: 40px;
-            position: relative; max-height: 90vh; overflow-y: auto;
+            width: 90%; max-width: 600px; border-radius: 30px; padding: 50px;
+            text-align: center; position: relative; max-height: 90vh; overflow-y: auto;
         }
-        .close-modal {
-            position: absolute; top: 20px; right: 20px; color: white; cursor: pointer; font-size: 24px;
+        .close-btn {
+            position: absolute; top: 25px; right: 25px;
+            background: rgba(255,255,255,0.15); color: white;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: background 0.2s; font-size: 18px;
         }
-        .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .team-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 13px; }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stat-card, .card-weather { grid-column: span 2; }
+        }
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .stat-card, .card-weather, .card-feed, .card-logs, .card-map, .alert-box { grid-column: span 1; }
+            header { flex-direction: column; align-items: stretch; gap: 15px; }
+            .header-right { justify-content: space-between; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- INTRO OVERLAY -->
-    <div id="intro-overlay">
-        <div class="intro-logo">
-            <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" />
-                <path d="M50 20 L50 80 M20 50 L80 50" stroke-linecap="round" />
-                <circle cx="50" cy="50" r="15" fill="var(--neon-green)" stroke="none" />
-            </svg>
-        </div>
-        <div class="intro-main-title">Smart Blind Stick Monitor</div>
-        <div class="intro-subtitle">A Multifunctional Smart Stick With Environmental And Technical Intelligence</div>
-        
-        <div class="intro-team-container">
-            <div id="teamNameDisplay" class="team-name-anim"></div>
-        </div>
-    </div>
+    <div class="ambient-bg"></div>
 
     <!-- TOP NAV -->
     <nav class="top-nav">
@@ -347,62 +332,64 @@
     <!-- ABOUT MODAL -->
     <div id="aboutModal" class="modal-overlay">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeAbout()">&times;</span>
-            <h2 style="margin-top:0;">Project Details</h2>
-            <p style="color: var(--neon-green); font-size: 12px; font-weight: 700; letter-spacing: 1px;">VISVESVARAYA TECHNOLOGICAL UNIVERSITY</p>
-            <h3 style="margin: 10px 0;">The Oxford College of Engineering</h3>
-            <p style="color: #888; font-size: 13px;">Dept of Electronics and Communication Engineering</p>
+            <div class="close-btn" onclick="closeAbout()"><i class="fas fa-times"></i></div>
+            <h2 style="font-weight: 800; font-size: 28px; color: white;">Project Details</h2>
+            <p style="color: var(--neon-green); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 25px;">Visvesvaraya Technological University</p>
+            <h3 style="color: #fff; font-weight: 600; font-size: 18px; margin-bottom: 5px;">The Oxford College of Engineering</h3>
+            <p style="color: #aaa; font-size: 14px; font-weight: 500; margin-bottom: 30px;">Department of Electronics and Communication Engineering</p>
             
-            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin: 20px 0;">
-                <div style="font-size: 11px; color: #666; font-weight: 700;">PROJECT TITLE</div>
-                <div style="font-weight: 600; margin-top: 5px;">"A Multifunctional Smart Stick With Environmental And Technical Intelligence"</div>
+            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="font-size: 12px; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Project Title</div>
+                <div style="color: #fff; font-weight: 700; font-size: 16px; line-height: 1.6;">"A Multifunctional Smart Stick With Environmental And Technical Intelligence"</div>
             </div>
 
-            <div style="text-align: left; margin-bottom: 20px;">
-                <div style="font-size: 11px; color: #666; font-weight: 700;">GUIDED BY</div>
-                <div style="font-weight: 700; font-size: 16px; margin-top: 2px;">Ms. Tina Elizabeth Thomas</div>
-                <div style="font-size: 13px; color: #888;">Assistant Professor</div>
+            <div style="text-align: left; margin-bottom: 25px;">
+                <div style="font-size: 12px; color: #888; font-weight: 700; text-transform: uppercase;">Under Guidance of</div>
+                <div style="color: white; font-weight: 700; font-size: 16px; margin-top: 5px;">Ms. Tina Elizabeth Thomas</div>
+                <div style="font-size: 13px; color: #aaa; font-weight: 500;">Assistant Professor</div>
             </div>
 
             <div style="text-align: left;">
-                <div style="font-size: 11px; color: #666; font-weight: 700; margin-bottom: 8px;">TEAM MEMBERS</div>
-                <div class="team-grid">
-                    <div class="team-card">Pavithra T <br><span style="color:#777; font-size:11px;">1OX22EC065</span></div>
-                    <div class="team-card">Punya K V <br><span style="color:#777; font-size:11px;">1OX22EC074</span></div>
-                    <div class="team-card">Salma <br><span style="color:#777; font-size:11px;">1OX22EC086</span></div>
-                    <div class="team-card">Spoorthi M <br><span style="color:#777; font-size:11px;">1OX22EC102</span></div>
+                <div style="font-size: 12px; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 15px;">Team Members</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #ddd;">Pavithra T</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #ddd;">Punya K V</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #ddd;">Salma</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #ddd;">Spoorthi M</div>
                 </div>
             </div>
 
-            <div style="margin-top: 30px; pt: 20px; border-top: 1px solid #333; font-size: 14px; color: #aaa;">
+            <div style="margin-top: 35px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.15); color: #aaa; font-size: 14px;">
                 Special Thanks to <br>
-                <strong style="color: var(--neon-blue);">Dr. Manju Devi, HOD, ECE</strong>
+                <strong style="color: var(--neon-blue); font-size: 16px; font-weight: 800; margin-top: 5px; display: inline-block;">Dr. Manju Devi, HOD, ECE</strong>
             </div>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
+    <!-- DASHBOARD -->
     <div class="dashboard-container">
         
-        <!-- USER HEADER -->
         <div class="user-header">
             <div class="greeting">
                 <h1 id="txt-greeting">Hello, Guardian</h1>
                 <span class="status-badge">● System Active</span>
             </div>
             <div class="header-controls">
-                <select class="lang-select" onchange="changeLanguage(this.value)">
-                    <option value="en">English</option>
-                    <option value="kn">ಕನ್ನಡ</option>
-                    <option value="hi">हिंदी</option>
-                </select>
-                <div class="icon-btn">
-                    <i class="far fa-bell"></i>
-                    <div class="notification-dot"></div>
+                <div class="control-group">
+                    <select class="lang-select" onchange="changeLanguage(this.value)">
+                        <option value="en">English</option>
+                        <option value="kn">ಕನ್ನಡ</option>
+                        <option value="hi">हिंदी</option>
+                    </select>
+                    <div class="icon-btn">
+                        <i class="far fa-bell"></i>
+                        <div class="notification-dot"></div>
+                    </div>
                 </div>
                 <button class="btn-primary" onclick="openAbout()">
                     <i class="fas fa-users"></i> <span id="txt-about">About Team</span>
                 </button>
+                <div class="avatar">G</div>
             </div>
         </div>
 
@@ -414,47 +401,57 @@
             <i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span>
         </div>
 
-        <!-- GRID -->
+        <!-- MAIN GRID -->
         <div class="main-grid">
-            <!-- SENSORS -->
+            
+            <!-- WEATHER CARD (NEW) -->
+            <div class="card card-weather">
+                <div class="card-header">
+                    <span class="card-label">Live Weather</span>
+                    <i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i>
+                </div>
+                <div class="weather-content" id="weatherBox">
+                    <div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                    <div>
+                        <div class="weather-temp" id="wTemp">--°C</div>
+                        <div class="weather-desc" id="wDesc">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROXIMITY -->
             <div class="card stat-card">
-                <div class="card-title">
-                    <span id="lbl-prox">Proximity</span> <i class="fas fa-ruler-horizontal" style="color: var(--neon-blue)"></i>
+                <div class="card-header">
+                    <span class="card-label" id="lbl-prox">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i>
                 </div>
                 <div class="metric" id="distVal">--</div>
                 <div class="unit" id="unit-prox">Centimeters</div>
             </div>
 
+            <!-- TILT -->
             <div class="card stat-card">
-                <div class="card-title">
-                    <span id="lbl-tilt">Stick Tilt</span> <i class="fas fa-compress-arrows-alt" style="color: var(--neon-green)"></i>
+                <div class="card-header">
+                    <span class="card-label" id="lbl-tilt">Stick Tilt</span> <i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i>
                 </div>
                 <div class="metric" id="tiltVal">--</div>
                 <div class="unit">m/s²</div>
             </div>
 
+            <!-- SYNC -->
             <div class="card stat-card">
-                <div class="card-title">
-                    <span id="lbl-sync">Last Sync</span> <i class="fas fa-clock"></i>
+                <div class="card-header">
+                    <span class="card-label" id="lbl-sync">Last Sync</span> <i class="fas fa-clock card-icon"></i>
                 </div>
                 <div class="metric" style="font-size: 28px;" id="timeVal">--:--</div>
-                <div class="unit">Live Data</div>
-            </div>
-
-            <div class="card stat-card">
-                <div class="card-title">
-                    <span id="lbl-cam">Camera</span> <i class="fas fa-video"></i>
-                </div>
-                <div class="metric" style="font-size: 24px; color: #777;" id="camStatusText">OFFLINE</div>
-                <div class="unit">System Status</div>
+                <div class="unit" id="unit-sync">Live Data</div>
             </div>
 
             <!-- VIDEO FEED -->
             <div class="card feed-card">
-                <div class="card-title"><span id="lbl-feed">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
-                <div class="video-box">
+                <div class="card-header"><span class="card-label" id="lbl-feed">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
+                <div class="video-container">
                     <div class="rec-badge"><div class="rec-dot"></div> REC</div>
-                    <img id="liveFeed" class="video-img" src="" style="display:none;" onload="this.style.display='block'; document.getElementById('vPlace').style.display='none';">
+                    <img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');">
                     <div id="vPlace" class="video-placeholder">
                         <i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
                         <span style="font-size: 12px;">Waiting for Signal...</span>
@@ -465,8 +462,8 @@
 
             <!-- LOGS -->
             <div class="card log-card">
-                <div class="card-title"><span id="lbl-ocr">Detected Signboards</span> <i class="fas fa-align-left"></i></div>
-                <div class="log-box" id="camText">
+                <div class="card-header"><span class="card-label" id="lbl-ocr">Detected Signboards</span> <i class="fas fa-align-left"></i></div>
+                <div class="log-terminal" id="camText">
                     <div class="log-line">> System Initialized...</div>
                     <div class="log-line">> Waiting for data stream...</div>
                 </div>
@@ -476,138 +473,115 @@
             <div class="card map-card">
                 <div id="map"></div>
                 <div class="map-overlay-controls">
-                    <button class="map-btn" onclick="toggleMapTheme()" id="btn-map-mode">
+                    <button class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode">
                         <i class="fas fa-adjust"></i> Map Mode
                     </button>
                 </div>
-                <button class="directions-btn" onclick="getDirections()">
-                    <i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span>
+                <button class="map-overlay-btn" onclick="getDirections()">
+                    <i class="fas fa-directions" style="color: var(--neon-blue)"></i> 
+                    <span id="btn-dir">Get Directions</span>
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- LOGIC -->
     <script>
-        // --- TRANSLATIONS ---
+        // --- SAFE HELPERS ---
+        function safeSetText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
+        }
+        function safeSetDisplay(id, display) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = display;
+        }
+        function safeSetHtml(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        }
+
+        // --- TRANSLATIONS (Shortened for brevity) ---
         const translations = {
-            en: {
-                greeting: "Hello, Guardian",
-                about: "About Team",
-                fall: "EMERGENCY: FALL DETECTED",
-                obs: "CAUTION: OBSTACLE AHEAD",
-                prox: "Proximity",
-                tilt: "Stick Tilt",
-                sync: "Last Sync",
-                cam: "Camera",
-                feed: "Live Visual Feed",
-                ocr: "Detected Signboards",
-                dir: "Get Directions",
-                u_cm: "Centimeters"
-            },
-            kn: {
-                greeting: "ನಮಸ್ಕಾರ, ರಕ್ಷಕರೆ",
-                about: "ತಂಡದ ಬಗ್ಗೆ",
-                fall: "ತುರ್ತು: ಬಿದ್ದುಹೋಗಿದೆ",
-                obs: "ಎಚ್ಚರಿಕೆ: ಮುಂದೆ ತಡೆ ಇದೆ",
-                prox: "ಸಾಮೀಪ್ಯ",
-                tilt: "ಕೋಲು ಓರೆ",
-                sync: "ಕೊನೆಯ ಸಿಂಕ್",
-                cam: "ಕ್ಯಾಮೆರಾ",
-                feed: "ದೃಶ್ಯ ಫೀಡ್",
-                ocr: "ಪತ್ತೆಯಾದ ಫಲಕಗಳು",
-                dir: "ದಾರಿ ತೋರಿಸಿ",
-                u_cm: "ಸೆಂಟಿಮೀಟರ್‌ಗಳು"
-            },
-            hi: {
-                greeting: "नमस्ते, अभिभावक",
-                about: "टीम के बारे में",
-                fall: "आपातकालीन: गिर गया",
-                obs: "सावधान: आगे बाधा है",
-                prox: "निकटता",
-                tilt: "छड़ी का झुकाव",
-                sync: "अंतिम सिंक",
-                cam: "कैमरा",
-                feed: "दृश्य फ़ीड",
-                ocr: "पहचाने गए साइनबोर्ड",
-                dir: "दिशा प्राप्त करें",
-                u_cm: "सेंटीमीटर"
-            }
+            en: { greeting: "Hello, Guardian", about: "About Team", fall: "EMERGENCY: FALL DETECTED", obs: "CAUTION: OBSTACLE AHEAD" },
+            kn: { greeting: "ನಮಸ್ಕಾರ, ರಕ್ಷಕರೆ", about: "ತಂಡದ ಬಗ್ಗೆ", fall: "ತುರ್ತು: ಬಿದ್ದುಹೋಗಿದೆ", obs: "ಎಚ್ಚರಿಕೆ: ಮುಂದೆ ತಡೆ ಇದೆ" },
+            hi: { greeting: "नमस्ते, अभिभावक", about: "टीम के बारे में", fall: "आपातकालीन: गिर गया", obs: "सावधान: आगे बाधा है" }
         };
 
         function changeLanguage(lang) {
             const t = translations[lang];
-            document.getElementById('txt-greeting').innerText = t.greeting;
-            document.getElementById('txt-about').innerText = t.about;
-            document.getElementById('txt-fall').innerText = t.fall;
-            document.getElementById('txt-obs').innerText = t.obs;
-            document.getElementById('lbl-prox').innerText = t.prox;
-            document.getElementById('lbl-tilt').innerText = t.tilt;
-            document.getElementById('lbl-sync').innerText = t.sync;
-            document.getElementById('lbl-cam').innerText = t.cam;
-            document.getElementById('lbl-feed').innerText = t.feed;
-            document.getElementById('lbl-ocr').innerText = t.ocr;
-            document.getElementById('btn-dir').innerText = t.dir;
-            document.getElementById('unit-prox').innerText = t.u_cm;
-        }
-
-        // --- INTRO ANIMATION ---
-        const teamMembers = ["Pavithra T", "Punya K V", "Salma", "Spoorthi M"];
-        window.addEventListener('load', async () => {
-            const nameContainer = document.getElementById('teamNameDisplay');
-            const overlay = document.getElementById('intro-overlay');
-            await new Promise(r => setTimeout(r, 2500));
-            for (let name of teamMembers) {
-                nameContainer.innerText = name;
-                nameContainer.style.opacity = '1';
-                await new Promise(r => setTimeout(r, 1000));
-                nameContainer.style.opacity = '0';
-                await new Promise(r => setTimeout(r, 500));
+            if(t) {
+                safeSetText('txt-greeting', t.greeting);
+                safeSetText('txt-about', t.about);
+                safeSetText('txt-fall', t.fall);
+                safeSetText('txt-obs', t.obs);
             }
-            overlay.style.opacity = '0';
-            setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
-        });
+        }
 
         // --- MAP LOGIC ---
         let map, marker, currentStickLocation = { lat: 0, lng: 0 };
-        
         function initMap() {
-            const darkStyle = [
-                { elementType: "geometry", stylers: [{ color: "#212121" }] },
-                { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-                { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
-                { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
-                { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
-                { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] },
-                { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] }
-            ];
-
+            const darkStyle = [{ elementType: "geometry", stylers: [{ color: "#212121" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }, { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] }];
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15, center: { lat: 12.9716, lng: 77.5946 },
-                mapId: "DEMO_MAP_ID",
-                styles: darkStyle,
-                disableDefaultUI: true, zoomControl: true
+                zoom: 15, center: { lat: 12.9716, lng: 77.5946 }, mapId: "DEMO_MAP_ID",
+                styles: darkStyle, disableDefaultUI: true, zoomControl: true
             });
             marker = new google.maps.Marker({ map: map, animation: google.maps.Animation.DROP });
         }
 
         function toggleMapTheme() {
             const mapDiv = document.getElementById('map');
+            const btn = document.getElementById('btn-map-mode');
             if (mapDiv.classList.contains('normal-mode')) {
                 mapDiv.classList.remove('normal-mode');
-                document.getElementById('btn-map-mode').innerHTML = '<i class="fas fa-adjust"></i> Map Mode';
+                btn.innerHTML = '<i class="fas fa-adjust"></i> Map Mode';
             } else {
                 mapDiv.classList.add('normal-mode');
-                document.getElementById('btn-map-mode').innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                btn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
             }
         }
 
         function getDirections() {
             if (currentStickLocation.lat !== 0) {
-                const url = `https://www.google.com/maps/dir/?api=1&destination=${currentStickLocation.lat},${currentStickLocation.lng}`;
-                window.open(url, '_blank');
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentStickLocation.lat},${currentStickLocation.lng}`, '_blank');
             } else { alert("Waiting for location data..."); }
         }
 
+        // --- WEATHER LOGIC (NEW) ---
+        let lastWeatherCheck = 0;
+        async function fetchWeather(lat, lon) {
+            const now = Date.now();
+            // Throttle: Only fetch every 5 mins (300000ms)
+            if (now - lastWeatherCheck < 300000) return; 
+            lastWeatherCheck = now;
+
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await response.json();
+                const w = data.current_weather;
+                
+                safeSetText('wTemp', `${w.temperature}°C`);
+                
+                // Map WMO codes to Icons/Text
+                const code = w.weathercode;
+                let iconClass = "fa-sun";
+                let desc = "Clear";
+                
+                if (code > 0 && code <= 3) { iconClass = "fa-cloud-sun"; desc = "Partly Cloudy"; }
+                else if (code >= 45 && code <= 48) { iconClass = "fa-smog"; desc = "Foggy"; }
+                else if (code >= 51 && code <= 67) { iconClass = "fa-cloud-rain"; desc = "Rainy"; }
+                else if (code >= 71) { iconClass = "fa-snowflake"; desc = "Snow"; }
+                else if (code >= 95) { iconClass = "fa-bolt"; desc = "Thunderstorm"; }
+
+                safeSetText('wDesc', desc);
+                const iconEl = document.querySelector('.weather-icon i');
+                if (iconEl) iconEl.className = `fas ${iconClass}`;
+            } catch (e) {
+                console.error("Weather Error", e);
+            }
+        }
+
+        // --- MODAL LOGIC ---
         function openAbout() { document.getElementById('aboutModal').style.display = 'flex'; setTimeout(() => document.getElementById('aboutModal').style.opacity = '1', 10); }
         function closeAbout() { document.getElementById('aboutModal').style.opacity = '0'; setTimeout(() => document.getElementById('aboutModal').style.display = 'none', 300); }
 
@@ -631,52 +605,57 @@
         } catch (e) { console.error(e); }
 
         function updateDashboard(data) {
-            // CM Conversion
-            if (data.distance) {
-                document.getElementById("distVal").innerText = (data.distance / 10).toFixed(1);
-            } else { document.getElementById("distVal").innerText = "--"; }
+            if (data.distance) safeSetText("distVal", (data.distance / 10).toFixed(1));
+            else safeSetText("distVal", "--");
             
-            document.getElementById("tiltVal").innerText = data.tilt ? data.tilt.toFixed(2) : "0.00";
-            if(data.lastUpdated) document.getElementById("timeVal").innerText = data.lastUpdated.toDate().toLocaleTimeString();
+            safeSetText("tiltVal", data.tilt ? data.tilt.toFixed(2) : "0.00");
+            if(data.lastUpdated) safeSetText("timeVal", data.lastUpdated.toDate().toLocaleTimeString());
 
             // Alerts
-            document.getElementById("fallAlert").style.display = data.isFall ? "block" : "none";
-            document.getElementById("obsAlert").style.display = (data.distance < 300) ? "block" : "none";
+            safeSetDisplay("fallAlert", data.isFall ? "block" : "none");
+            safeSetDisplay("obsAlert", (data.distance < 300) ? "block" : "none");
 
-            // Map
+            // Map & Weather
             if(map && marker && data.lat && data.lat !== 0) {
                 const pos = { lat: data.lat, lng: data.lon };
                 currentStickLocation = pos;
                 marker.setPosition(pos); map.panTo(pos);
+                
+                // Fetch Weather using Location
+                fetchWeather(data.lat, data.lon);
             }
 
             // Camera
             const camStatusText = document.getElementById("camStatusText");
-            if (data.cameraActive) {
-                camStatusText.innerText = "ONLINE"; camStatusText.style.color = "var(--neon-green)";
-                if (data.detectedText && data.detectedText.trim() !== "") {
-                    const entry = document.createElement('div');
-                    entry.className = 'log-line';
-                    entry.innerHTML = `> ${data.detectedText}`;
-                    const terminal = document.getElementById("camText");
-                    terminal.prepend(entry);
-                    if(terminal.children.length > 20) terminal.lastChild.remove();
+            if (camStatusText) {
+                if (data.cameraActive) {
+                    camStatusText.innerText = "ONLINE"; camStatusText.style.color = "var(--neon-green)";
+                    if (data.detectedText && data.detectedText.trim() !== "") {
+                        const entry = document.createElement('div');
+                        entry.className = 'log-line';
+                        entry.innerHTML = `> ${data.detectedText}`;
+                        const terminal = document.getElementById("camText");
+                        if (terminal) {
+                            terminal.prepend(entry);
+                            if(terminal.children.length > 20) terminal.lastChild.remove();
+                        }
+                    }
+                } else {
+                    camStatusText.innerText = "OFFLINE"; camStatusText.style.color = "#777";
                 }
-            } else {
-                camStatusText.innerText = "OFFLINE"; camStatusText.style.color = "#777";
             }
 
-            // Feed
             if (data.cameraFrameUrl && data.cameraFrameUrl.startsWith("http")) {
                 const img = document.getElementById("liveFeed");
-                if(img.src !== data.cameraFrameUrl) {
+                if(img && img.src !== data.cameraFrameUrl) {
                     img.src = data.cameraFrameUrl;
-                    if(data.lastFrameTime) document.getElementById("feedTime").innerText = "Last Frame: " + data.lastFrameTime.toDate().toLocaleTimeString();
+                    if(data.lastFrameTime) safeSetText("feedTime", "Last Frame: " + data.lastFrameTime.toDate().toLocaleTimeString());
                 }
             }
         }
     </script>
 
+    <!-- MAPS -->
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7eSOarDDbx5aMU5kc5PxyeL7INzT5hHQ&callback=initMap&loading=async"></script>
 </body>
 </html>
