@@ -172,10 +172,16 @@
             color: #fff;
         }
 
-        /* --- GRID SYSTEM --- */
+        /* --- ROBUST GRID SYSTEM --- */
         .main-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            /* 4 Columns default */
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            /* Defined Areas for Perfect Placement */
+            grid-template-areas: 
+                "weather prox tilt sync"
+                "feed feed logs logs"
+                "map map map map";
             gap: 25px;
         }
 
@@ -188,7 +194,18 @@
             overflow: hidden;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
         }
+
+        /* Specific Area Assignments */
+        .card-weather { grid-area: weather; }
+        .card-prox { grid-area: prox; }
+        .card-tilt { grid-area: tilt; }
+        .card-sync { grid-area: sync; }
+        .card-feed { grid-area: feed; min-height: 350px; }
+        .card-logs { grid-area: logs; min-height: 350px; }
+        .card-map { grid-area: map; height: 500px; padding: 0; }
 
         .card-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -206,20 +223,15 @@
         }
         .unit { font-size: 14px; color: #ddd; font-weight: 600; }
 
-        /* Card Placements */
-        .stat-card { grid-column: span 1; }
-        .card-weather { grid-column: span 1; } 
-        .card-map { grid-column: span 4; height: 500px; padding: 0; }
-        .card-feed { grid-column: span 2; height: 350px; display: flex; flex-direction: column; }
-        .card-logs { grid-column: span 2; height: 350px; display: flex; flex-direction: column; }
-
-        /* Alerts */
+        /* Alerts - Span full width when visible */
         .alert-box {
-            grid-column: span 4; display: none; padding: 20px; border-radius: 20px;
+            grid-column: 1 / -1; /* Always span full width */
+            display: none; padding: 20px; border-radius: 20px;
             text-align: center; font-weight: 800;
             font-size: 16px; letter-spacing: 0.5px;
             animation: slideDown 0.4s ease;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 10px; /* Space below alert */
         }
         .alert-red { background: rgba(255, 0, 85, 0.2); border: 2px solid rgba(255, 0, 85, 0.6); color: #ffb3c6; }
         .alert-orange { background: rgba(255, 165, 0, 0.2); border: 2px solid rgba(255, 165, 0, 0.6); color: #ffeebb; }
@@ -299,13 +311,33 @@
         @keyframes blink { 50% { opacity: 0.5; } }
         @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Responsive */
+        /* --- RESPONSIVE BREAKPOINTS --- */
         @media (max-width: 1200px) {
-            .stat-card, .card-weather { grid-column: span 2; }
+            .main-grid {
+                /* Switch to 2 columns on Tablet */
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas: 
+                    "weather prox"
+                    "tilt sync"
+                    "feed feed"
+                    "logs logs"
+                    "map map";
+            }
         }
         @media (max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-            .stat-card, .card-weather, .card-feed, .card-logs, .card-map, .alert-box { grid-column: span 1; }
+            .main-grid {
+                /* Switch to 1 column on Mobile */
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "weather"
+                    "prox"
+                    "tilt"
+                    "sync"
+                    "feed"
+                    "logs"
+                    "map";
+            }
+            /* Stack header on mobile */
             header { flex-direction: column; align-items: stretch; gap: 15px; }
             .header-right { justify-content: space-between; }
         }
@@ -393,18 +425,18 @@
             </div>
         </div>
 
-        <!-- ALERTS -->
-        <div id="fallAlert" class="alert-box alert-red">
-            <i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span>
-        </div>
-        <div id="obsAlert" class="alert-box alert-orange">
-            <i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span>
-        </div>
-
-        <!-- MAIN GRID -->
+        <!-- MAIN GRID (With Defined Areas) -->
         <div class="main-grid">
             
-            <!-- WEATHER CARD (NEW) -->
+            <!-- ALERTS (Injected here via JS or HTML logic) -->
+            <div id="fallAlert" class="alert-box alert-red">
+                <i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span>
+            </div>
+            <div id="obsAlert" class="alert-box alert-orange">
+                <i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span>
+            </div>
+
+            <!-- WEATHER CARD -->
             <div class="card card-weather">
                 <div class="card-header">
                     <span class="card-label">Live Weather</span>
@@ -420,7 +452,7 @@
             </div>
 
             <!-- PROXIMITY -->
-            <div class="card stat-card">
+            <div class="card card-prox">
                 <div class="card-header">
                     <span class="card-label" id="lbl-prox">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i>
                 </div>
@@ -429,7 +461,7 @@
             </div>
 
             <!-- TILT -->
-            <div class="card stat-card">
+            <div class="card card-tilt">
                 <div class="card-header">
                     <span class="card-label" id="lbl-tilt">Stick Tilt</span> <i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i>
                 </div>
@@ -438,7 +470,7 @@
             </div>
 
             <!-- SYNC -->
-            <div class="card stat-card">
+            <div class="card card-sync">
                 <div class="card-header">
                     <span class="card-label" id="lbl-sync">Last Sync</span> <i class="fas fa-clock card-icon"></i>
                 </div>
@@ -447,7 +479,7 @@
             </div>
 
             <!-- VIDEO FEED -->
-            <div class="card feed-card">
+            <div class="card card-feed">
                 <div class="card-header"><span class="card-label" id="lbl-feed">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
                 <div class="video-container">
                     <div class="rec-badge"><div class="rec-dot"></div> REC</div>
@@ -461,7 +493,7 @@
             </div>
 
             <!-- LOGS -->
-            <div class="card log-card">
+            <div class="card card-logs">
                 <div class="card-header"><span class="card-label" id="lbl-ocr">Detected Signboards</span> <i class="fas fa-align-left"></i></div>
                 <div class="log-terminal" id="camText">
                     <div class="log-line">> System Initialized...</div>
@@ -470,7 +502,7 @@
             </div>
 
             <!-- MAP -->
-            <div class="card map-card">
+            <div class="card card-map">
                 <div id="map"></div>
                 <div class="map-overlay-controls">
                     <button class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode">
