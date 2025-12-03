@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Blind Stick Monitor</title>
     
-    <!-- Fonts -->
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase & EmailJS -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <style>
+        /* ... (Styles kept clean and professional) ... */
         :root {
             --glass-bg: rgba(20, 20, 25, 0.95);
             --glass-border: rgba(255, 255, 255, 0.15);
@@ -28,335 +29,101 @@
             --ctrl-height: 44px;
             --nav-height: 70px;
         }
-
         * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #050507;
-            color: var(--text-main);
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-weight: 500;
-        }
-
-        /* --- BACKGROUND --- */
-        .ambient-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15), transparent 40%);
-            z-index: -1;
-        }
-
-        /* --- LAYOUT --- */
-        .dashboard-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 30px;
-            width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        /* --- TOP NAV BAR --- */
-        .top-nav {
-            height: var(--nav-height);
-            background: rgba(10, 10, 12, 0.9);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(15px);
-        }
-
-        .nav-left { display: flex; align-items: center; gap: 15px; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #050507; color: var(--text-main); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; font-weight: 500; }
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15), transparent 40%), radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15), transparent 40%); z-index: -1; }
+        .dashboard-container { max-width: 1600px; margin: 0 auto; padding: 30px; width: 100%; flex: 1; display: flex; flex-direction: column; gap: 30px; }
         
-        .nav-logo svg {
-            width: 32px; height: 32px;
-            fill: none; stroke: var(--neon-green);
-            stroke-width: 5;
-        }
-
-        .brand-title {
-            font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: white;
-            text-transform: uppercase;
-        }
-
-        /* --- USER HEADER --- */
-        header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 20px 35px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .header-left h1 {
-            margin: 0; font-size: 32px; font-weight: 800; color: white;
-            letter-spacing: -1px;
-        }
-        .status-badge {
-            font-size: 12px; color: var(--neon-green); 
-            background: rgba(0, 255, 157, 0.15);
-            padding: 5px 12px; border-radius: 8px;
-            border: 1px solid rgba(0, 255, 157, 0.3);
-            font-weight: 800; letter-spacing: 0.5px;
-            margin-top: 8px; display: inline-block;
-        }
-
-        .header-right { 
-            display: flex; align-items: center; gap: 15px; 
-        }
-
-        .control-group {
-            display: flex; align-items: center; gap: 5px;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0 5px; border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            height: var(--ctrl-height);
-        }
-
-        .lang-select {
-            background: transparent; color: #fff; border: none;
-            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
-            height: 100%; padding: 0 15px; cursor: pointer; outline: none;
-        }
+        /* Nav & Header */
+        .top-nav { height: var(--nav-height); background: rgba(10, 10, 12, 0.9); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .nav-logo svg { width: 32px; height: 32px; fill: none; stroke: var(--neon-green); stroke-width: 5; }
+        .brand-title { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: white; text-transform: uppercase; }
+        
+        .user-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; flex-wrap: wrap; gap: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+        .header-left h1 { margin: 0; font-size: 32px; font-weight: 800; color: white; letter-spacing: -1px; }
+        .status-badge { font-size: 12px; color: var(--neon-green); background: rgba(0, 255, 157, 0.15); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 157, 0.3); font-weight: 800; letter-spacing: 0.5px; margin-top: 8px; display: inline-block; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .control-group { display: flex; align-items: center; gap: 5px; background: rgba(255, 255, 255, 0.08); padding: 0 5px; border-radius: 12px; border: 1px solid var(--glass-border); height: var(--ctrl-height); }
+        .lang-select { background: transparent; color: #fff; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; height: 100%; padding: 0 15px; cursor: pointer; outline: none; }
         .lang-select option { background: #1a1a1a; color: white; padding: 10px; }
-
-        .icon-btn {
-            width: 40px; height: 100%; 
-            display: flex; justify-content: center; align-items: center;
-            border-radius: 10px; cursor: pointer; color: #fff;
-            position: relative; transition: background 0.2s;
-        }
-        .icon-btn:hover { background: rgba(255, 255, 255, 0.15); }
-        .notification-dot {
-            position: absolute; top: 10px; right: 10px; width: 8px; height: 8px;
-            background: var(--neon-red); border-radius: 50%; border: 2px solid #222;
-        }
-
-        .btn-primary {
-            background: var(--accent-gradient);
-            border: none; color: white;
-            padding: 0 24px; height: var(--ctrl-height);
-            border-radius: 12px;
-            font-weight: 700; font-size: 13px;
-            cursor: pointer; transition: transform 0.2s;
-            display: flex; align-items: center; gap: 8px;
-            white-space: nowrap; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
+        .btn-primary { background: var(--accent-gradient); border: none; color: white; padding: 0 24px; height: var(--ctrl-height); border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); }
+        .avatar { width: var(--ctrl-height); height: var(--ctrl-height); border-radius: 12px; background: #333; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 16px; border: 2px solid rgba(255,255,255,0.2); color: #fff; }
 
-        .avatar {
-            width: var(--ctrl-height); height: var(--ctrl-height);
-            border-radius: 12px; background: #333;
-            display: flex; justify-content: center; align-items: center;
-            font-weight: 800; font-size: 16px; border: 2px solid rgba(255,255,255,0.2);
-            color: #fff;
-        }
-
-        /* --- ROBUST GRID SYSTEM --- */
-        .main-grid {
-            display: grid;
-            /* 4 Columns default */
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            /* Defined Areas for Perfect Placement */
-            grid-template-areas: 
-                "weather prox tilt sync"
-                "feed feed logs logs"
-                "map map map map";
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 25px;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Specific Area Assignments */
-        .card-weather { grid-area: weather; }
-        .card-prox { grid-area: prox; }
-        .card-tilt { grid-area: tilt; }
-        .card-sync { grid-area: sync; }
-        .card-feed { grid-area: feed; min-height: 350px; }
-        .card-logs { grid-area: logs; min-height: 350px; }
-        .card-map { grid-area: map; height: 500px; padding: 0; }
-
-        .card-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px;
-        }
-        .card-label {
-            font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px;
-            color: #aaa; font-weight: 800;
-        }
+        /* Grid & Cards */
+        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-areas: "weather prox tilt sync" "feed feed logs logs" "map map map map"; gap: 25px; }
+        .card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; position: relative; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .card-weather { grid-area: weather; } .card-prox { grid-area: prox; } .card-tilt { grid-area: tilt; } .card-sync { grid-area: sync; } .card-feed { grid-area: feed; min-height: 350px; } .card-logs { grid-area: logs; min-height: 350px; } .card-map { grid-area: map; height: 500px; padding: 0; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #aaa; font-weight: 800; }
         .card-icon { font-size: 18px; color: #fff; opacity: 0.9; }
-
-        .metric { 
-            font-size: 42px; font-weight: 900; color: #fff; margin-bottom: 5px; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
+        .metric { font-size: 42px; font-weight: 900; color: #fff; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .unit { font-size: 14px; color: #ddd; font-weight: 600; }
 
-        /* Alerts - Span full width when visible */
-        .alert-box {
-            grid-column: 1 / -1; /* Always span full width */
-            display: none; padding: 20px; border-radius: 20px;
-            text-align: center; font-weight: 800;
-            font-size: 16px; letter-spacing: 0.5px;
-            animation: slideDown 0.4s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            margin-bottom: 10px; /* Space below alert */
-        }
-        .alert-red { background: rgba(255, 0, 85, 0.2); border: 2px solid rgba(255, 0, 85, 0.6); color: #ffb3c6; }
-        .alert-orange { background: rgba(255, 165, 0, 0.2); border: 2px solid rgba(255, 165, 0, 0.6); color: #ffeebb; }
+        /* Alerts */
+        .alert-box { grid-column: 1 / -1; display: none; padding: 20px; border-radius: 20px; text-align: center; font-weight: 800; font-size: 16px; letter-spacing: 0.5px; animation: slideDown 0.4s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.2); margin-bottom: 10px; }
+        .alert-red { background: rgba(255, 0, 85, 0.25); border: 2px solid #ff0055; color: #ffb3c6; }
+        .alert-orange { background: rgba(255, 165, 0, 0.25); border: 2px solid orange; color: #ffeebb; }
 
-        /* Weather Specific */
-        .weather-content {
-            display: flex; align-items: center; gap: 15px;
-        }
+        /* Widgets */
+        .weather-content { display: flex; align-items: center; gap: 15px; }
         .weather-icon { font-size: 36px; color: var(--neon-yellow); }
         .weather-temp { font-size: 42px; font-weight: 900; color: white; }
         .weather-desc { font-size: 13px; color: #ccc; font-weight: 600; text-transform: capitalize; }
-
-        /* Map */
         #map { width: 100%; height: 100%; border-radius: 24px; filter: grayscale(100%) invert(92%) contrast(88%); transition: filter 0.3s; }
         #map.normal-mode { filter: none; }
-        .map-overlay-btn {
-            position: absolute; bottom: 25px; left: 25px;
-            background: white; color: black;
-            padding: 12px 24px; border-radius: 30px;
-            font-weight: 800; font-size: 13px;
-            cursor: pointer; border: none;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
-            display: flex; align-items: center; gap: 8px;
-            transition: transform 0.2s;
-        }
+        .map-toggle-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .map-overlay-btn { position: absolute; bottom: 25px; left: 25px; background: white; color: black; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 13px; cursor: pointer; border: none; box-shadow: 0 5px 20px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
         .map-overlay-btn:hover { transform: scale(1.05); }
-        .map-toggle-btn {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.8); color: white; border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer;
-        }
-
-        /* Video */
-        .video-container {
-            flex: 1; background: #000; border-radius: 16px;
-            position: relative; overflow: hidden; border: 1px solid #444;
-        }
+        .video-container { flex: 1; background: #000; border-radius: 16px; position: relative; overflow: hidden; border: 1px solid #444; }
         .live-feed-img { width: 100%; height: 100%; object-fit: cover; }
-        .rec-badge {
-            position: absolute; top: 15px; right: 15px;
-            background: rgba(0,0,0,0.8); padding: 5px 10px;
-            border-radius: 6px; color: white; font-size: 11px; font-weight: 700;
-            display: flex; align-items: center; gap: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .rec-dot { width: 8px; height: 8px; background: #ff0055; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 8px #ff0055; }
-        
-        /* Logs */
-        .log-terminal {
-            flex: 1; background: rgba(0,0,0,0.4);
-            border-radius: 16px; padding: 20px;
-            font-family: monospace; font-size: 14px; color: var(--neon-green);
-            font-weight: 600; line-height: 1.6;
-            overflow-y: auto; border: 1px solid rgba(255,255,255,0.08);
-        }
+        .rec-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); padding: 5px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); }
+        .rec-dot { width: 8px; height: 8px; background: #ff0055; border-radius: 50%; animation: blink 1s infinite; }
+        .video-placeholder { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; }
+        .log-terminal { flex: 1; background: rgba(0,0,0,0.4); border-radius: 16px; padding: 20px; font-family: monospace; font-size: 14px; color: var(--neon-green); font-weight: 600; line-height: 1.6; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); }
 
-        /* Modal */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        .modal-content {
-            background: #121214; border: 1px solid var(--glass-border);
-            width: 90%; max-width: 600px; border-radius: 30px; padding: 50px;
-            text-align: center; position: relative; max-height: 90vh; overflow-y: auto;
-        }
-        .close-btn {
-            position: absolute; top: 25px; right: 25px;
-            background: rgba(255,255,255,0.15); color: white;
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: background 0.2s; font-size: 18px;
-        }
+        /* SOS Modal */
+        .sos-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.3); backdrop-filter: blur(20px); z-index: 9999; display: none; justify-content: center; align-items: center; animation: pulseRed 2s infinite; }
+        .sos-content { background: #1a0505; border: 3px solid #ff0055; width: 90%; max-width: 500px; padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 0 80px rgba(255, 0, 85, 0.6); }
+        .sos-icon { font-size: 60px; color: #ff0055; margin-bottom: 20px; animation: shake 0.5s infinite; }
+        .sos-title { font-size: 28px; font-weight: 900; color: white; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .sos-msg { color: #ffb3c6; margin-bottom: 30px; font-size: 16px; line-height: 1.5; }
+        @keyframes pulseRed { 0% { background: rgba(255, 0, 0, 0.1); } 50% { background: rgba(255, 0, 0, 0.4); } 100% { background: rgba(255, 0, 0, 0.1); } }
+        @keyframes shake { 0% { transform: translate(0, 0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } 100% { transform: translate(0, 0); } }
 
+        /* About Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #121214; border: 1px solid var(--glass-border); width: 90%; max-width: 600px; border-radius: 30px; padding: 50px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-btn { position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background 0.2s; font-size: 18px; }
         @keyframes blink { 50% { opacity: 0.5; } }
         @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* --- RESPONSIVE BREAKPOINTS --- */
-        @media (max-width: 1200px) {
-            .main-grid {
-                /* Switch to 2 columns on Tablet */
-                grid-template-columns: 1fr 1fr;
-                grid-template-areas: 
-                    "weather prox"
-                    "tilt sync"
-                    "feed feed"
-                    "logs logs"
-                    "map map";
-            }
-        }
-        @media (max-width: 900px) {
-            .main-grid {
-                /* Switch to 1 column on Mobile */
-                grid-template-columns: 1fr;
-                grid-template-areas: 
-                    "weather"
-                    "prox"
-                    "tilt"
-                    "sync"
-                    "feed"
-                    "logs"
-                    "map";
-            }
-            /* Stack header on mobile */
-            header { flex-direction: column; align-items: stretch; gap: 15px; }
-            .header-right { justify-content: space-between; }
-        }
+        @media (max-width: 1200px) { .main-grid { grid-template-areas: "weather prox" "tilt sync" "feed feed" "logs logs" "map map"; grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 900px) { .main-grid { grid-template-areas: "weather" "prox" "tilt" "sync" "feed" "logs" "map"; grid-template-columns: 1fr; } header { flex-direction: column; align-items: stretch; gap: 15px; } .header-right { justify-content: space-between; } }
     </style>
 </head>
 <body>
+    
+    <!-- SOS MODAL -->
+    <div id="sosModal" class="sos-modal">
+        <div class="sos-content">
+            <i class="fas fa-ambulance sos-icon"></i>
+            <div class="sos-title">Fall Detected!</div>
+            <p class="sos-msg">
+                Emergency alerts are being sent automatically via Email.<br>
+                Audio alarm activated on this device.
+            </p>
+            <p style="margin-top: 20px; font-size: 12px; color: #aaa; cursor: pointer; text-decoration: underline;" onclick="closeSos()">Dismiss & Stop Alarm</p>
+        </div>
+    </div>
 
     <div class="ambient-bg"></div>
-
-    <!-- TOP NAV -->
+    
     <nav class="top-nav">
         <div class="nav-left">
-            <div class="nav-logo">
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" />
-                    <path d="M50 20 L50 80 M20 50 L80 50" stroke-linecap="round" />
-                    <circle cx="50" cy="50" r="15" fill="var(--neon-green)" stroke="none" />
-                </svg>
-            </div>
+            <div class="nav-logo"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" /><path d="M50 20 L50 80 M20 50 L80 50" stroke-linecap="round" /><circle cx="50" cy="50" r="15" fill="var(--neon-green)" stroke="none" /></svg></div>
             <div class="brand-title">Smart Blind Stick Monitor</div>
         </div>
     </nav>
@@ -369,18 +136,15 @@
             <p style="color: var(--neon-green); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 25px;">Visvesvaraya Technological University</p>
             <h3 style="color: #fff; font-weight: 600; font-size: 18px; margin-bottom: 5px;">The Oxford College of Engineering</h3>
             <p style="color: #aaa; font-size: 14px; font-weight: 500; margin-bottom: 30px;">Department of Electronics and Communication Engineering</p>
-            
             <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1);">
                 <div style="font-size: 12px; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Project Title</div>
                 <div style="color: #fff; font-weight: 700; font-size: 16px; line-height: 1.6;">"A Multifunctional Smart Stick With Environmental And Technical Intelligence"</div>
             </div>
-
             <div style="text-align: left; margin-bottom: 25px;">
                 <div style="font-size: 12px; color: #888; font-weight: 700; text-transform: uppercase;">Under Guidance of</div>
                 <div style="color: white; font-weight: 700; font-size: 16px; margin-top: 5px;">Ms. Tina Elizabeth Thomas</div>
                 <div style="font-size: 13px; color: #aaa; font-weight: 500;">Assistant Professor</div>
             </div>
-
             <div style="text-align: left;">
                 <div style="font-size: 12px; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 15px;">Team Members</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -390,17 +154,13 @@
                     <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #ddd;">Spoorthi M</div>
                 </div>
             </div>
-
             <div style="margin-top: 35px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.15); color: #aaa; font-size: 14px;">
-                Special Thanks to <br>
-                <strong style="color: var(--neon-blue); font-size: 16px; font-weight: 800; margin-top: 5px; display: inline-block;">Dr. Manju Devi, HOD, ECE</strong>
+                Special Thanks to <br><strong style="color: var(--neon-blue); font-size: 16px; font-weight: 800; margin-top: 5px; display: inline-block;">Dr. Manju Devi, HOD, ECE</strong>
             </div>
         </div>
     </div>
 
-    <!-- DASHBOARD -->
     <div class="dashboard-container">
-        
         <div class="user-header">
             <div class="greeting">
                 <h1 id="txt-greeting">Hello, Guardian</h1>
@@ -413,207 +173,137 @@
                         <option value="kn">ಕನ್ನಡ</option>
                         <option value="hi">हिंदी</option>
                     </select>
-                    <div class="icon-btn">
-                        <i class="far fa-bell"></i>
-                        <div class="notification-dot"></div>
-                    </div>
+                    <div class="icon-btn"><i class="far fa-bell"></i><div class="notification-dot"></div></div>
                 </div>
-                <button class="btn-primary" onclick="openAbout()">
-                    <i class="fas fa-users"></i> <span id="txt-about">About Team</span>
-                </button>
+                <button class="btn-primary" onclick="openAbout()"><i class="fas fa-users"></i> <span id="txt-about">About Team</span></button>
                 <div class="avatar">G</div>
             </div>
         </div>
-
-        <!-- MAIN GRID (With Defined Areas) -->
         <div class="main-grid">
+            <div id="fallAlert" class="alert-box alert-red"><i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span></div>
+            <div id="obsAlert" class="alert-box alert-orange"><i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span></div>
             
-            <!-- ALERTS (Injected here via JS or HTML logic) -->
-            <div id="fallAlert" class="alert-box alert-red">
-                <i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span>
-            </div>
-            <div id="obsAlert" class="alert-box alert-orange">
-                <i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span>
-            </div>
-
-            <!-- WEATHER CARD -->
+            <!-- METRICS -->
             <div class="card card-weather">
-                <div class="card-header">
-                    <span class="card-label">Live Weather</span>
-                    <i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i>
-                </div>
+                <div class="card-header"><span class="card-label">Live Weather</span><i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i></div>
                 <div class="weather-content" id="weatherBox">
                     <div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div>
-                    <div>
-                        <div class="weather-temp" id="wTemp">--°C</div>
-                        <div class="weather-desc" id="wDesc">Loading...</div>
-                    </div>
+                    <div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div>
                 </div>
             </div>
-
-            <!-- PROXIMITY -->
             <div class="card card-prox">
-                <div class="card-header">
-                    <span class="card-label" id="lbl-prox">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i>
-                </div>
-                <div class="metric" id="distVal">--</div>
-                <div class="unit" id="unit-prox">Centimeters</div>
+                <div class="card-header"><span class="card-label">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i></div>
+                <div class="metric" id="distVal">--</div><div class="unit">Centimeters</div>
             </div>
-
-            <!-- TILT -->
             <div class="card card-tilt">
-                <div class="card-header">
-                    <span class="card-label" id="lbl-tilt">Stick Tilt</span> <i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i>
-                </div>
-                <div class="metric" id="tiltVal">--</div>
-                <div class="unit">m/s²</div>
+                <div class="card-header"><span class="card-label">Stick Angle</span><i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i></div>
+                <div class="metric" id="tiltVal">--</div><div class="unit">Degrees (°)</div>
             </div>
-
-            <!-- SYNC -->
             <div class="card card-sync">
-                <div class="card-header">
-                    <span class="card-label" id="lbl-sync">Last Sync</span> <i class="fas fa-clock card-icon"></i>
-                </div>
-                <div class="metric" style="font-size: 28px;" id="timeVal">--:--</div>
-                <div class="unit" id="unit-sync">Live Data</div>
+                <div class="card-header"><span class="card-label">Last Sync</span><i class="fas fa-clock card-icon"></i></div>
+                <div class="metric" style="font-size: 28px;" id="timeVal">--:--</div><div class="unit">Live Data</div>
             </div>
 
-            <!-- VIDEO FEED -->
+            <!-- VIDEO -->
             <div class="card card-feed">
-                <div class="card-header"><span class="card-label" id="lbl-feed">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
+                <div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
                 <div class="video-container">
                     <div class="rec-badge"><div class="rec-dot"></div> REC</div>
                     <img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');">
-                    <div id="vPlace" class="video-placeholder">
-                        <i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
-                        <span style="font-size: 12px;">Waiting for Signal...</span>
-                    </div>
+                    <div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div>
                 </div>
                 <div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div>
             </div>
 
             <!-- LOGS -->
             <div class="card card-logs">
-                <div class="card-header"><span class="card-label" id="lbl-ocr">Detected Signboards</span> <i class="fas fa-align-left"></i></div>
+                <div class="card-header"><span class="card-label">Detected Signs</span> <i class="fas fa-align-left card-icon"></i></div>
                 <div class="log-terminal" id="camText">
-                    <div class="log-line">> System Initialized...</div>
-                    <div class="log-line">> Waiting for data stream...</div>
+                    <div class="log-entry"><span class="log-marker">></span> System Initialized...</div>
                 </div>
             </div>
 
             <!-- MAP -->
             <div class="card card-map">
                 <div id="map"></div>
-                <div class="map-overlay-controls">
-                    <button class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode">
-                        <i class="fas fa-adjust"></i> Map Mode
-                    </button>
-                </div>
-                <button class="map-overlay-btn" onclick="getDirections()">
-                    <i class="fas fa-directions" style="color: var(--neon-blue)"></i> 
-                    <span id="btn-dir">Get Directions</span>
-                </button>
+                <div class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode"><i class="fas fa-adjust"></i> Map Mode</div>
+                <button class="map-overlay-btn" onclick="getDirections()"><i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span></button>
             </div>
         </div>
     </div>
 
-    <!-- LOGIC -->
     <script>
-        // --- SAFE HELPERS ---
-        function safeSetText(id, text) {
-            const el = document.getElementById(id);
-            if (el) el.innerText = text;
-        }
-        function safeSetDisplay(id, display) {
-            const el = document.getElementById(id);
-            if (el) el.style.display = display;
-        }
-        function safeSetHtml(id, html) {
-            const el = document.getElementById(id);
-            if (el) el.innerHTML = html;
-        }
+        // ==============================================
+        // 🚨 GUARDIAN CONFIGURATION 🚨
+        // ==============================================
+        // Add your IDs from EmailJS here:
+        const EMAIL_SERVICE_ID = "service_rx5xg8g"; 
+        const EMAIL_TEMPLATE_ID = "template_088l4p9"; 
+        
+        // IMPORTANT: Add your Public Key!
+        // You can find it in EmailJS Dashboard > Account > Public Key
+        const EMAIL_PUBLIC_KEY = "WiYp3tXbbC7DtvIXZ"; 
+        // ==============================================
 
-        // --- TRANSLATIONS (Shortened for brevity) ---
-        const translations = {
-            en: { greeting: "Hello, Guardian", about: "About Team", fall: "EMERGENCY: FALL DETECTED", obs: "CAUTION: OBSTACLE AHEAD" },
-            kn: { greeting: "ನಮಸ್ಕಾರ, ರಕ್ಷಕರೆ", about: "ತಂಡದ ಬಗ್ಗೆ", fall: "ತುರ್ತು: ಬಿದ್ದುಹೋಗಿದೆ", obs: "ಎಚ್ಚರಿಕೆ: ಮುಂದೆ ತಡೆ ಇದೆ" },
-            hi: { greeting: "नमस्ते, अभिभावक", about: "टीम के बारे में", fall: "आपातकालीन: गिर गया", obs: "सावधान: आगे बाधा है" }
-        };
+        (function(){ 
+            // Initialize only if key is set to prevent errors
+            if(EMAIL_PUBLIC_KEY !== "WiYp3tXbbC7DtvIXZ") emailjs.init(EMAIL_PUBLIC_KEY); 
+        })();
 
-        function changeLanguage(lang) {
-            const t = translations[lang];
-            if(t) {
-                safeSetText('txt-greeting', t.greeting);
-                safeSetText('txt-about', t.about);
-                safeSetText('txt-fall', t.fall);
-                safeSetText('txt-obs', t.obs);
-            }
-        }
+        // Helpers
+        function safeSetText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
+        function safeSetDisplay(id, display) { const el = document.getElementById(id); if (el) el.style.display = display; }
 
-        // --- MAP LOGIC ---
-        let map, marker, currentStickLocation = { lat: 0, lng: 0 };
+        // Map
+        let map, marker, currentLoc = { lat: 0, lng: 0 };
         function initMap() {
-            const darkStyle = [{ elementType: "geometry", stylers: [{ color: "#212121" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }, { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] }];
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15, center: { lat: 12.9716, lng: 77.5946 }, mapId: "DEMO_MAP_ID",
-                styles: darkStyle, disableDefaultUI: true, zoomControl: true
-            });
+            const darkStyle = [{ elementType: "geometry", stylers: [{ color: "#212121" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }];
+            map = new google.maps.Map(document.getElementById("map"), { zoom: 15, center: { lat: 12.9716, lng: 77.5946 }, mapId: "DEMO_MAP_ID", styles: darkStyle, disableDefaultUI: true, zoomControl: true });
             marker = new google.maps.Marker({ map: map, animation: google.maps.Animation.DROP });
         }
-
         function toggleMapTheme() {
             const mapDiv = document.getElementById('map');
             const btn = document.getElementById('btn-map-mode');
-            if (mapDiv.classList.contains('normal-mode')) {
-                mapDiv.classList.remove('normal-mode');
-                btn.innerHTML = '<i class="fas fa-adjust"></i> Map Mode';
-            } else {
-                mapDiv.classList.add('normal-mode');
-                btn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            }
+            if (mapDiv.classList.contains('normal-mode')) { mapDiv.classList.remove('normal-mode'); btn.innerHTML = '<i class="fas fa-adjust"></i> Map Mode'; }
+            else { mapDiv.classList.add('normal-mode'); btn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode'; }
         }
+        function getDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoc.lat},${currentLoc.lng}`, '_blank'); }
 
-        function getDirections() {
-            if (currentStickLocation.lat !== 0) {
-                window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentStickLocation.lat},${currentStickLocation.lng}`, '_blank');
-            } else { alert("Waiting for location data..."); }
-        }
-
-        // --- WEATHER LOGIC (NEW) ---
-        let lastWeatherCheck = 0;
         async function fetchWeather(lat, lon) {
-            const now = Date.now();
-            // Throttle: Only fetch every 5 mins (300000ms)
-            if (now - lastWeatherCheck < 300000) return; 
-            lastWeatherCheck = now;
-
             try {
                 const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
                 const data = await response.json();
-                const w = data.current_weather;
-                
-                safeSetText('wTemp', `${w.temperature}°C`);
-                
-                // Map WMO codes to Icons/Text
-                const code = w.weathercode;
-                let iconClass = "fa-sun";
-                let desc = "Clear";
-                
-                if (code > 0 && code <= 3) { iconClass = "fa-cloud-sun"; desc = "Partly Cloudy"; }
-                else if (code >= 45 && code <= 48) { iconClass = "fa-smog"; desc = "Foggy"; }
-                else if (code >= 51 && code <= 67) { iconClass = "fa-cloud-rain"; desc = "Rainy"; }
-                else if (code >= 71) { iconClass = "fa-snowflake"; desc = "Snow"; }
-                else if (code >= 95) { iconClass = "fa-bolt"; desc = "Thunderstorm"; }
+                safeSetText('wTemp', `${data.current_weather.temperature}°C`);
+                safeSetText('wDesc', "Updated");
+            } catch(e) {}
+        }
 
-                safeSetText('wDesc', desc);
-                const iconEl = document.querySelector('.weather-icon i');
-                if (iconEl) iconEl.className = `fas ${iconClass}`;
-            } catch (e) {
-                console.error("Weather Error", e);
+        // --- SOS LOGIC ---
+        let lastEmailSent = 0;
+        function triggerSOS(lat, lng) {
+            const now = Date.now();
+            document.getElementById('sosModal').style.display = 'flex';
+            
+            // Audio Alarm
+            const msg = new SpeechSynthesisUtterance("Emergency! Fall Detected! Check Dashboard!");
+            msg.rate = 1.2;
+            window.speechSynthesis.speak(msg);
+
+            // Automatic Email (Throttle: 3 mins)
+            if (now - lastEmailSent > 180000 && EMAIL_PUBLIC_KEY !== "YOUR_PUBLIC_KEY_HERE") {
+                lastEmailSent = now;
+                const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                const params = { maps_link: mapLink };
+                emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, params)
+                    .then(() => console.log("Auto-Email Sent"))
+                    .catch((err) => console.error("Email Failed", err));
             }
         }
 
-        // --- MODAL LOGIC ---
+        function closeSos() { 
+            document.getElementById('sosModal').style.display = 'none'; 
+            window.speechSynthesis.cancel(); // Stop alarm
+        }
         function openAbout() { document.getElementById('aboutModal').style.display = 'flex'; setTimeout(() => document.getElementById('aboutModal').style.opacity = '1', 10); }
         function closeAbout() { document.getElementById('aboutModal').style.opacity = '0'; setTimeout(() => document.getElementById('aboutModal').style.display = 'none', 300); }
 
@@ -638,42 +328,37 @@
 
         function updateDashboard(data) {
             if (data.distance) safeSetText("distVal", (data.distance / 10).toFixed(1));
-            else safeSetText("distVal", "--");
             
-            safeSetText("tiltVal", data.tilt ? data.tilt.toFixed(2) : "0.00");
-            if(data.lastUpdated) safeSetText("timeVal", data.lastUpdated.toDate().toLocaleTimeString());
-
-            // Alerts
-            safeSetDisplay("fallAlert", data.isFall ? "block" : "none");
-            safeSetDisplay("obsAlert", (data.distance < 300) ? "block" : "none");
-
-            // Map & Weather
-            if(map && marker && data.lat && data.lat !== 0) {
-                const pos = { lat: data.lat, lng: data.lon };
-                currentStickLocation = pos;
-                marker.setPosition(pos); map.panTo(pos);
-                
-                // Fetch Weather using Location
-                fetchWeather(data.lat, data.lon);
+            // Tilt & Fall
+            let tiltVal = parseFloat(data.tilt || 0);
+            safeSetText("tiltVal", tiltVal.toFixed(2));
+            
+            if (Math.abs(tiltVal) > 70 || data.isFall === true) {
+                safeSetDisplay("fallAlert", "block");
+                triggerSOS(data.lat || 0, data.lon || 0);
+            } else {
+                safeSetDisplay("fallAlert", "none");
             }
 
-            // Camera
-            const camStatusText = document.getElementById("camStatusText");
-            if (camStatusText) {
-                if (data.cameraActive) {
-                    camStatusText.innerText = "ONLINE"; camStatusText.style.color = "var(--neon-green)";
-                    if (data.detectedText && data.detectedText.trim() !== "") {
-                        const entry = document.createElement('div');
-                        entry.className = 'log-line';
-                        entry.innerHTML = `> ${data.detectedText}`;
-                        const terminal = document.getElementById("camText");
-                        if (terminal) {
-                            terminal.prepend(entry);
-                            if(terminal.children.length > 20) terminal.lastChild.remove();
-                        }
-                    }
-                } else {
-                    camStatusText.innerText = "OFFLINE"; camStatusText.style.color = "#777";
+            if(data.lastUpdated) safeSetText("timeVal", data.lastUpdated.toDate().toLocaleTimeString());
+
+            if(map && marker && data.lat) {
+                const pos = { lat: data.lat, lng: data.lon };
+                currentLoc = pos;
+                marker.setPosition(pos); map.panTo(pos);
+                if (Math.random() > 0.9) fetchWeather(data.lat, data.lon);
+            }
+
+            safeSetDisplay("obsAlert", (data.distance < 300) ? "block" : "none");
+
+            if (data.cameraActive && data.detectedText) {
+                const term = document.getElementById("camText");
+                if (data.detectedText.length > 2 && !term.innerHTML.includes(data.detectedText)) {
+                     const entry = document.createElement('div');
+                     entry.className = 'log-entry';
+                     entry.innerHTML = `<span class="log-marker">></span> ${data.detectedText}`;
+                     term.prepend(entry);
+                     if(term.children.length > 15) term.lastChild.remove();
                 }
             }
 
@@ -685,9 +370,17 @@
                 }
             }
         }
+        
+        function changeLanguage(lang) {
+             const t = {
+                en: { greeting: "Hello, Guardian", fall: "EMERGENCY: FALL DETECTED" },
+                kn: { greeting: "ನಮಸ್ಕಾರ, ರಕ್ಷಕರೆ", fall: "ತುರ್ತು: ಬಿದ್ದುಹೋಗಿದೆ" },
+                hi: { greeting: "नमस्ते, अभिभावक", fall: "आपातकालीन: गिर गया" }
+            }[lang];
+            if(t) { safeSetText('txt-greeting', t.greeting); safeSetText('txt-fall', t.fall); }
+        }
     </script>
 
-    <!-- MAPS -->
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7eSOarDDbx5aMU5kc5PxyeL7INzT5hHQ&callback=initMap&loading=async"></script>
 </body>
 </html>
