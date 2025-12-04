@@ -32,11 +32,14 @@
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #050507; color: var(--text-main); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; font-weight: 500; }
         .ambient-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15), transparent 40%), radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15), transparent 40%); z-index: -1; }
         .dashboard-container { max-width: 1600px; margin: 0 auto; padding: 30px; width: 100%; flex: 1; display: flex; flex-direction: column; gap: 30px; }
+        
+        /* Nav & Header */
         .top-nav { height: var(--nav-height); background: rgba(10, 10, 12, 0.9); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
         .nav-left { display: flex; align-items: center; gap: 15px; }
         .nav-logo svg { width: 32px; height: 32px; fill: none; stroke: var(--neon-green); stroke-width: 5; }
         .brand-title { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; color: white; text-transform: uppercase; }
-        header { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px 35px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        
+        .user-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; flex-wrap: wrap; gap: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
         .header-left h1 { margin: 0; font-size: 32px; font-weight: 800; color: white; letter-spacing: -1px; }
         .status-badge { font-size: 12px; color: var(--neon-green); background: rgba(0, 255, 157, 0.15); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 157, 0.3); font-weight: 800; letter-spacing: 0.5px; margin-top: 8px; display: inline-block; }
         .header-right { display: flex; align-items: center; gap: 15px; }
@@ -46,17 +49,24 @@
         .btn-primary { background: var(--accent-gradient); border: none; color: white; padding: 0 24px; height: var(--ctrl-height); border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); }
         .avatar { width: var(--ctrl-height); height: var(--ctrl-height); border-radius: 12px; background: #333; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 16px; border: 2px solid rgba(255,255,255,0.2); color: #fff; }
+
+        /* Grid & Cards */
         .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-areas: "weather prox tilt sync" "feed feed logs logs" "map map map map"; gap: 25px; }
         .card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px; position: relative; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
         .card-weather { grid-area: weather; } .card-prox { grid-area: prox; } .card-tilt { grid-area: tilt; } .card-sync { grid-area: sync; } .card-feed { grid-area: feed; min-height: 350px; } .card-logs { grid-area: logs; min-height: 350px; } .card-map { grid-area: map; height: 500px; padding: 0; }
+        
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .card-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #aaa; font-weight: 800; }
         .card-icon { font-size: 18px; color: #fff; opacity: 0.9; }
         .metric { font-size: 42px; font-weight: 900; color: #fff; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .unit { font-size: 14px; color: #ddd; font-weight: 600; }
+
+        /* Alerts */
         .alert-box { grid-column: 1 / -1; display: none; padding: 20px; border-radius: 20px; text-align: center; font-weight: 800; font-size: 16px; letter-spacing: 0.5px; animation: slideDown 0.4s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.2); margin-bottom: 10px; }
         .alert-red { background: rgba(255, 0, 85, 0.25); border: 2px solid #ff0055; color: #ffb3c6; }
         .alert-orange { background: rgba(255, 165, 0, 0.25); border: 2px solid orange; color: #ffeebb; }
+
+        /* Widgets */
         .weather-content { display: flex; align-items: center; gap: 15px; }
         .weather-icon { font-size: 36px; color: var(--neon-yellow); }
         .weather-temp { font-size: 42px; font-weight: 900; color: white; }
@@ -71,11 +81,8 @@
         .rec-dot { width: 8px; height: 8px; background: #ff0055; border-radius: 50%; animation: blink 1s infinite; }
         .video-placeholder { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; }
         .log-terminal { flex: 1; background: rgba(0,0,0,0.4); border-radius: 16px; padding: 20px; font-family: monospace; font-size: 14px; color: var(--neon-green); font-weight: 600; line-height: 1.6; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
-        .modal-content { background: #121214; border: 1px solid var(--glass-border); width: 90%; max-width: 600px; border-radius: 30px; padding: 50px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8); }
-        .close-btn { position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background 0.2s; font-size: 18px; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* SOS Modal */
         .sos-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.3); backdrop-filter: blur(20px); z-index: 9999; display: none; justify-content: center; align-items: center; animation: pulseRed 2s infinite; }
         .sos-content { background: #1a0505; border: 3px solid #ff0055; width: 90%; max-width: 500px; padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 0 80px rgba(255, 0, 85, 0.6); }
         .sos-icon { font-size: 60px; color: #ff0055; margin-bottom: 20px; animation: shake 0.5s infinite; }
@@ -84,17 +91,25 @@
         @keyframes pulseRed { 0% { background: rgba(255, 0, 0, 0.1); } 50% { background: rgba(255, 0, 0, 0.4); } 100% { background: rgba(255, 0, 0, 0.1); } }
         @keyframes shake { 0% { transform: translate(0, 0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } 100% { transform: translate(0, 0); } }
 
+        /* About Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #121214; border: 1px solid var(--glass-border); width: 90%; max-width: 600px; border-radius: 30px; padding: 50px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8); }
+        .close-btn { position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background 0.2s; font-size: 18px; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         @media (max-width: 1200px) { .main-grid { grid-template-areas: "weather prox" "tilt sync" "feed feed" "logs logs" "map map"; grid-template-columns: 1fr 1fr; } }
         @media (max-width: 900px) { .main-grid { grid-template-areas: "weather" "prox" "tilt" "sync" "feed" "logs" "map"; grid-template-columns: 1fr; } header { flex-direction: column; align-items: stretch; gap: 15px; } .header-right { justify-content: space-between; } }
     </style>
 </head>
 <body>
     
+    <!-- SOS MODAL -->
     <div id="sosModal" class="sos-modal">
         <div class="sos-content">
             <i class="fas fa-ambulance sos-icon"></i>
             <div class="sos-title">Fall Detected!</div>
-            <p class="sos-msg">EMERGENCY! The system detected a fall.<br>An alert email has been sent to the Guardian.</p>
+            <p class="sos-msg">EMERGENCY! The system detected a fall.<br>Sending automated email alert...</p>
             <p style="margin-top: 20px; font-size: 12px; color: #aaa; cursor: pointer; text-decoration: underline;" onclick="closeSos()">Silence Alarm</p>
         </div>
     </div>
@@ -125,13 +140,53 @@
         <div class="main-grid">
             <div id="fallAlert" class="alert-box alert-red"><i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span></div>
             <div id="obsAlert" class="alert-box alert-orange"><i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span></div>
-            <div class="card card-weather"><div class="card-header"><span class="card-label">Live Weather</span><i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i></div><div class="weather-content" id="weatherBox"><div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div><div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div></div></div>
-            <div class="card card-prox"><div class="card-header"><span class="card-label">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i></div><div class="metric" id="distVal">--</div><div class="unit">Centimeters</div></div>
-            <div class="card card-tilt"><div class="card-header"><span class="card-label">Stick Angle</span><i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i></div><div class="metric" id="tiltVal">--</div><div class="unit">Degrees (°)</div></div>
-            <div class="card card-sync"><div class="card-header"><span class="card-label">Last Sync</span><i class="fas fa-clock card-icon"></i></div><div class="metric" style="font-size: 28px;" id="timeVal">--:--</div><div class="unit">Live Data</div></div>
-            <div class="card card-feed"><div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div><div class="video-container"><div class="rec-badge"><div class="rec-dot"></div> REC</div><img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');"><div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div></div><div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div></div>
-            <div class="card card-logs"><div class="card-header"><span class="card-label">Detected Signs</span> <i class="fas fa-align-left card-icon"></i></div><div class="log-terminal" id="camText"><div class="log-entry"><span class="log-marker">></span> System Initialized...</div></div></div>
-            <div class="card card-map"><div id="map"></div><div class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode"><i class="fas fa-adjust"></i> Map Mode</div><button class="map-overlay-btn" onclick="getDirections()"><i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span></button></div>
+            
+            <!-- METRICS -->
+            <div class="card card-weather">
+                <div class="card-header"><span class="card-label">Live Weather</span><i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i></div>
+                <div class="weather-content" id="weatherBox">
+                    <div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                    <div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div>
+                </div>
+            </div>
+            <div class="card card-prox">
+                <div class="card-header"><span class="card-label">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i></div>
+                <div class="metric" id="distVal">--</div><div class="unit">Centimeters</div>
+            </div>
+            <div class="card card-tilt">
+                <div class="card-header"><span class="card-label">Stick Angle</span><i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i></div>
+                <div class="metric" id="tiltVal">--</div><div class="unit">Degrees (°)</div>
+            </div>
+            <div class="card card-sync">
+                <div class="card-header"><span class="card-label">Last Sync</span><i class="fas fa-clock card-icon"></i></div>
+                <div class="metric" style="font-size: 28px;" id="timeVal">--:--</div><div class="unit">Live Data</div>
+            </div>
+
+            <!-- VIDEO -->
+            <div class="card card-feed">
+                <div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
+                <div class="video-container">
+                    <div class="rec-badge"><div class="rec-dot"></div> REC</div>
+                    <img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');">
+                    <div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div>
+                </div>
+                <div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div>
+            </div>
+
+            <!-- LOGS -->
+            <div class="card card-logs">
+                <div class="card-header"><span class="card-label">Detected Signs</span> <i class="fas fa-align-left card-icon"></i></div>
+                <div class="log-terminal" id="camText">
+                    <div class="log-entry"><span class="log-marker">></span> System Initialized...</div>
+                </div>
+            </div>
+
+            <!-- MAP -->
+            <div class="card card-map">
+                <div id="map"></div>
+                <div class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode"><i class="fas fa-adjust"></i> Map Mode</div>
+                <button class="map-overlay-btn" onclick="getDirections()"><i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span></button>
+            </div>
         </div>
     </div>
 
@@ -139,13 +194,12 @@
         // ==============================================
         // 🚨 SETUP KEYS HERE 🚨
         // ==============================================
-        // Enter your EmailJS keys from the website
-        const EMAIL_SERVICE_ID = "service_rx5xg8g"; 
-        const EMAIL_TEMPLATE_ID = "template_088l4p9"; 
-        const EMAIL_PUBLIC_KEY = "WiYp3tXbbC7DtvIXZ"; 
+        const EMAIL_SERVICE_ID = "service_rx5xg8g"; // Your Service ID
+        const EMAIL_TEMPLATE_ID = "template_088l4p9"; // Your Template ID
+        const EMAIL_PUBLIC_KEY = "WiYp3tXbbC7DtvIXZ"; // Your Public Key
         // ==============================================
 
-        (function(){ if(EMAIL_PUBLIC_KEY !== "WiYp3tXbbC7DtvIXZ") emailjs.init(EMAIL_PUBLIC_KEY); })();
+        (function(){ emailjs.init(EMAIL_PUBLIC_KEY); })();
 
         function safeSetText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
         function safeSetDisplay(id, display) { const el = document.getElementById(id); if (el) el.style.display = display; }
@@ -157,7 +211,8 @@
             marker = new google.maps.Marker({ map: map, animation: google.maps.Animation.DROP });
         }
         function toggleMapTheme() {
-            const mapDiv = document.getElementById('map'); const btn = document.getElementById('btn-map-mode');
+            const mapDiv = document.getElementById('map');
+            const btn = document.getElementById('btn-map-mode');
             if (mapDiv.classList.contains('normal-mode')) { mapDiv.classList.remove('normal-mode'); btn.innerHTML = '<i class="fas fa-adjust"></i> Map Mode'; }
             else { mapDiv.classList.add('normal-mode'); btn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode'; }
         }
@@ -172,34 +227,55 @@
             } catch(e) {}
         }
 
-        // --- SOS LOGIC (Auto-Email + Audio) ---
+        // --- SOS LOGIC ---
         let lastEmailSent = 0;
+        
+        // Load voices first
+        let voices = [];
+        window.speechSynthesis.onvoiceschanged = () => {
+            voices = window.speechSynthesis.getVoices();
+        };
+
         function triggerSOS(lat, lng) {
             const now = Date.now();
             document.getElementById('sosModal').style.display = 'flex';
             
-            // PANIC ALARM
+            // PANIC ALARM (FEMALE, HIGH PITCH, FAST)
             if (!window.speechSynthesis.speaking) {
                 const msg = new SpeechSynthesisUtterance("Emergency! Fall Detected! Check Status!");
-                msg.rate = 1.1;
-                msg.pitch = 1.2;
+                
+                // Try to find a female voice (Google, Microsoft, Apple usually have female voices)
+                const femaleVoice = voices.find(v => v.name.includes("Female") || v.name.includes("Google US English") || v.name.includes("Samantha"));
+                if (femaleVoice) msg.voice = femaleVoice;
+
+                msg.rate = 1.3; // Faster
+                msg.pitch = 1.5; // Higher pitch (panic)
+                msg.volume = 1.0;
                 window.speechSynthesis.speak(msg);
             }
 
-            // AUTO-EMAIL (Throttle: 5 mins)
-            if (now - lastEmailSent > 300000 && EMAIL_PUBLIC_KEY !== "YOUR_PUBLIC_KEY_HERE") {
+            // AUTO-EMAIL (No Throttle for testing, but ideally throttle)
+            // Note: Removed throttle check for testing purpose. Add "&& now - lastEmailSent > 60000" for production.
+            if (now - lastEmailSent > 5000) { 
                 lastEmailSent = now;
                 const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
-                // NOTE: We map 'maps_link' to 'message' because your template uses {{message}}
+                
                 const params = { 
                     title: "FALL ALERT", 
                     name: "Smart Stick System",
                     message: `EMERGENCY: Fall Detected! Location: ${mapLink}`,
-                    email: "guardian@example.com" // Optional if your template needs it
+                    email: "guardian@example.com" 
                 };
+                
                 emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, params)
-                    .then(() => console.log("Email Sent"))
-                    .catch((err) => console.error("Email Failed", err));
+                    .then(() => {
+                        console.log("Email Sent Successfully!");
+                        alert("Email Sent to Guardian!"); // Debug Alert
+                    })
+                    .catch((err) => {
+                        console.error("Email Failed", err);
+                        alert("Email Failed: " + JSON.stringify(err)); // Debug Alert
+                    });
             }
         }
 
@@ -207,6 +283,7 @@
         function openAbout() { document.getElementById('aboutModal').style.display = 'flex'; setTimeout(() => document.getElementById('aboutModal').style.opacity = '1', 10); }
         function closeAbout() { document.getElementById('aboutModal').style.opacity = '0'; setTimeout(() => document.getElementById('aboutModal').style.display = 'none', 300); }
 
+        // --- FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyD7eSOarDDbx5aMU5kc5PxyeL7INzT5hHQ",
             authDomain: "smartstickmonitor.firebaseapp.com",
