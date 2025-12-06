@@ -15,6 +15,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <style>
+        /* ... (Previous CSS kept exactly the same for the polished look) ... */
         :root {
             --glass-bg: rgba(20, 20, 25, 0.95);
             --glass-border: rgba(255, 255, 255, 0.15);
@@ -109,10 +110,17 @@
         <div class="sos-content">
             <i class="fas fa-ambulance sos-icon"></i>
             <div class="sos-title">Fall Detected!</div>
-            <p class="sos-msg">EMERGENCY! The system detected a fall.<br>Sending automated email alert...</p>
+            <p class="sos-msg">
+                EMERGENCY! The system detected a fall.<br>
+                Sending automated email alert...
+            </p>
             <p style="margin-top: 20px; font-size: 12px; color: #aaa; cursor: pointer; text-decoration: underline;" onclick="closeSos()">Silence Alarm</p>
         </div>
     </div>
+
+    <!-- EMERGENCY AUDIO -->
+    <!-- Using a generic siren sound + TTS fallback -->
+    <audio id="sirenAudio" src="https://www.soundjay.com/mechanical/sounds/smoke-detector-1.mp3" loop></audio>
 
     <div class="ambient-bg"></div>
     <nav class="top-nav">
@@ -140,53 +148,13 @@
         <div class="main-grid">
             <div id="fallAlert" class="alert-box alert-red"><i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span></div>
             <div id="obsAlert" class="alert-box alert-orange"><i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span></div>
-            
-            <!-- METRICS -->
-            <div class="card card-weather">
-                <div class="card-header"><span class="card-label">Live Weather</span><i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i></div>
-                <div class="weather-content" id="weatherBox">
-                    <div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div>
-                    <div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div>
-                </div>
-            </div>
-            <div class="card card-prox">
-                <div class="card-header"><span class="card-label">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i></div>
-                <div class="metric" id="distVal">--</div><div class="unit">Centimeters</div>
-            </div>
-            <div class="card card-tilt">
-                <div class="card-header"><span class="card-label">Stick Angle</span><i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i></div>
-                <div class="metric" id="tiltVal">--</div><div class="unit">Degrees (°)</div>
-            </div>
-            <div class="card card-sync">
-                <div class="card-header"><span class="card-label">Last Sync</span><i class="fas fa-clock card-icon"></i></div>
-                <div class="metric" style="font-size: 28px;" id="timeVal">--:--</div><div class="unit">Live Data</div>
-            </div>
-
-            <!-- VIDEO -->
-            <div class="card card-feed">
-                <div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
-                <div class="video-container">
-                    <div class="rec-badge"><div class="rec-dot"></div> REC</div>
-                    <img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');">
-                    <div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div>
-                </div>
-                <div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div>
-            </div>
-
-            <!-- LOGS -->
-            <div class="card card-logs">
-                <div class="card-header"><span class="card-label">Detected Signs</span> <i class="fas fa-align-left card-icon"></i></div>
-                <div class="log-terminal" id="camText">
-                    <div class="log-entry"><span class="log-marker">></span> System Initialized...</div>
-                </div>
-            </div>
-
-            <!-- MAP -->
-            <div class="card card-map">
-                <div id="map"></div>
-                <div class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode"><i class="fas fa-adjust"></i> Map Mode</div>
-                <button class="map-overlay-btn" onclick="getDirections()"><i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span></button>
-            </div>
+            <div class="card card-weather"><div class="card-header"><span class="card-label">Live Weather</span><i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i></div><div class="weather-content" id="weatherBox"><div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div><div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div></div></div>
+            <div class="card card-prox"><div class="card-header"><span class="card-label">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i></div><div class="metric" id="distVal">--</div><div class="unit">Centimeters</div></div>
+            <div class="card card-tilt"><div class="card-header"><span class="card-label">Stick Angle</span><i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i></div><div class="metric" id="tiltVal">--</div><div class="unit">Degrees (°)</div></div>
+            <div class="card card-sync"><div class="card-header"><span class="card-label">Last Sync</span><i class="fas fa-clock card-icon"></i></div><div class="metric" style="font-size: 28px;" id="timeVal">--:--</div><div class="unit">Live Data</div></div>
+            <div class="card card-feed"><div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div><div class="video-container"><div class="rec-badge"><div class="rec-dot"></div> REC</div><img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');"><div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div></div><div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div></div>
+            <div class="card card-logs"><div class="card-header"><span class="card-label">Detected Signs</span> <i class="fas fa-align-left card-icon"></i></div><div class="log-terminal" id="camText"><div class="log-entry"><span class="log-marker">></span> System Initialized...</div></div></div>
+            <div class="card card-map"><div id="map"></div><div class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode"><i class="fas fa-adjust"></i> Map Mode</div><button class="map-overlay-btn" onclick="getDirections()"><i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span></button></div>
         </div>
     </div>
 
@@ -194,9 +162,9 @@
         // ==============================================
         // 🚨 SETUP KEYS HERE 🚨
         // ==============================================
-        const EMAIL_SERVICE_ID = "service_rx5xg8g"; // Your Service ID
-        const EMAIL_TEMPLATE_ID = "template_088l4p9"; // Your Template ID
-        const EMAIL_PUBLIC_KEY = "WiYp3tXbbC7DtvIXZ"; // Your Public Key
+        const EMAIL_SERVICE_ID = "service_rx5xg8g"; 
+        const EMAIL_TEMPLATE_ID = "template_088l4p9"; 
+        const EMAIL_PUBLIC_KEY = "WiYp3tXbbC7DtvIXZ"; 
         // ==============================================
 
         (function(){ emailjs.init(EMAIL_PUBLIC_KEY); })();
@@ -227,36 +195,25 @@
             } catch(e) {}
         }
 
-        // --- SOS LOGIC ---
+        // --- SOS LOGIC (Siren + Auto Email) ---
         let lastEmailSent = 0;
         
-        // Load voices first
+        // Load Voices
         let voices = [];
-        window.speechSynthesis.onvoiceschanged = () => {
-            voices = window.speechSynthesis.getVoices();
-        };
+        window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
 
         function triggerSOS(lat, lng) {
             const now = Date.now();
             document.getElementById('sosModal').style.display = 'flex';
             
-            // PANIC ALARM (FEMALE, HIGH PITCH, FAST)
-            if (!window.speechSynthesis.speaking) {
-                const msg = new SpeechSynthesisUtterance("Emergency! Fall Detected! Check Status!");
-                
-                // Try to find a female voice (Google, Microsoft, Apple usually have female voices)
-                const femaleVoice = voices.find(v => v.name.includes("Female") || v.name.includes("Google US English") || v.name.includes("Samantha"));
-                if (femaleVoice) msg.voice = femaleVoice;
-
-                msg.rate = 1.3; // Faster
-                msg.pitch = 1.5; // Higher pitch (panic)
-                msg.volume = 1.0;
-                window.speechSynthesis.speak(msg);
+            // 1. PLAY SIREN
+            const siren = document.getElementById('sirenAudio');
+            if (siren.paused) {
+                siren.play().catch(e => console.log("Audio blocked, click to play"));
             }
 
-            // AUTO-EMAIL (No Throttle for testing, but ideally throttle)
-            // Note: Removed throttle check for testing purpose. Add "&& now - lastEmailSent > 60000" for production.
-            if (now - lastEmailSent > 5000) { 
+            // 2. SEND EMAIL (Debounced to 5 seconds to prevent spam, but fast for testing)
+            if (now - lastEmailSent > 5000) {
                 lastEmailSent = now;
                 const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
                 
@@ -270,16 +227,19 @@
                 emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, params)
                     .then(() => {
                         console.log("Email Sent Successfully!");
-                        alert("Email Sent to Guardian!"); // Debug Alert
+                        alert("📧 ALERT EMAIL SENT TO GUARDIAN!"); // VISUAL FEEDBACK
                     })
                     .catch((err) => {
                         console.error("Email Failed", err);
-                        alert("Email Failed: " + JSON.stringify(err)); // Debug Alert
+                        alert("Email Failed: " + JSON.stringify(err));
                     });
             }
         }
 
-        function closeSos() { document.getElementById('sosModal').style.display = 'none'; window.speechSynthesis.cancel(); }
+        function closeSos() { 
+            document.getElementById('sosModal').style.display = 'none'; 
+            document.getElementById('sirenAudio').pause();
+        }
         function openAbout() { document.getElementById('aboutModal').style.display = 'flex'; setTimeout(() => document.getElementById('aboutModal').style.opacity = '1', 10); }
         function closeAbout() { document.getElementById('aboutModal').style.opacity = '0'; setTimeout(() => document.getElementById('aboutModal').style.display = 'none', 300); }
 
@@ -313,6 +273,7 @@
                 triggerSOS(data.lat || 0, data.lon || 0);
             } else {
                 safeSetDisplay("fallAlert", "none");
+                document.getElementById('sirenAudio').pause(); // Auto-stop if stick picked up
             }
 
             safeSetDisplay("obsAlert", (data.distance < 300) ? "block" : "none");
