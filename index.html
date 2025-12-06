@@ -15,7 +15,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <style>
-        /* ... (Previous CSS kept exactly the same for the polished look) ... */
+        /* ... (Styles kept clean and professional) ... */
         :root {
             --glass-bg: rgba(20, 20, 25, 0.95);
             --glass-border: rgba(255, 255, 255, 0.15);
@@ -101,10 +101,33 @@
 
         @media (max-width: 1200px) { .main-grid { grid-template-areas: "weather prox" "tilt sync" "feed feed" "logs logs" "map map"; grid-template-columns: 1fr 1fr; } }
         @media (max-width: 900px) { .main-grid { grid-template-areas: "weather" "prox" "tilt" "sync" "feed" "logs" "map"; grid-template-columns: 1fr; } header { flex-direction: column; align-items: stretch; gap: 15px; } .header-right { justify-content: space-between; } }
+        
+        /* Start Overlay */
+        #startOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .start-btn {
+            margin-top: 20px; padding: 15px 40px; font-size: 18px; font-weight: 800;
+            color: #000; background: var(--neon-green); border: none; border-radius: 30px; cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.4); transition: transform 0.2s;
+        }
+        .start-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
     
+    <!-- START SCREEN (MANDATORY) -->
+    <div id="startOverlay">
+        <i class="fas fa-shield-alt" style="font-size: 60px; color: var(--neon-green); margin-bottom: 20px;"></i>
+        <h1 style="color: white;">Guardian Monitor System</h1>
+        <p style="color: #ccc; margin-bottom: 30px;">Click start to enable Audio Alerts & Monitoring</p>
+        <button class="start-btn" onclick="startSystem()">INITIALIZE SYSTEM</button>
+    </div>
+
     <!-- SOS MODAL -->
     <div id="sosModal" class="sos-modal">
         <div class="sos-content">
@@ -119,8 +142,7 @@
     </div>
 
     <!-- EMERGENCY AUDIO -->
-    <!-- Using a generic siren sound + TTS fallback -->
-    <audio id="sirenAudio" src="https://www.soundjay.com/mechanical/sounds/smoke-detector-1.mp3" loop></audio>
+    <audio id="sirenAudio" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-tone-996.mp3" loop></audio>
 
     <div class="ambient-bg"></div>
     <nav class="top-nav">
@@ -148,11 +170,23 @@
         <div class="main-grid">
             <div id="fallAlert" class="alert-box alert-red"><i class="fas fa-exclamation-triangle"></i> <span id="txt-fall">EMERGENCY: FALL DETECTED</span></div>
             <div id="obsAlert" class="alert-box alert-orange"><i class="fas fa-hand-paper"></i> <span id="txt-obs">CAUTION: OBSTACLE AHEAD</span></div>
+            
+            <!-- METRICS -->
             <div class="card card-weather"><div class="card-header"><span class="card-label">Live Weather</span><i class="fas fa-cloud-sun card-icon" style="color: var(--neon-yellow)"></i></div><div class="weather-content" id="weatherBox"><div class="weather-icon"><i class="fas fa-spinner fa-spin"></i></div><div><div class="weather-temp" id="wTemp">--°C</div><div class="weather-desc" id="wDesc">Loading...</div></div></div></div>
             <div class="card card-prox"><div class="card-header"><span class="card-label">Proximity</span> <i class="fas fa-ruler-horizontal card-icon" style="color: var(--neon-blue)"></i></div><div class="metric" id="distVal">--</div><div class="unit">Centimeters</div></div>
             <div class="card card-tilt"><div class="card-header"><span class="card-label">Stick Angle</span><i class="fas fa-compress-arrows-alt card-icon" style="color: var(--neon-green)"></i></div><div class="metric" id="tiltVal">--</div><div class="unit">Degrees (°)</div></div>
             <div class="card card-sync"><div class="card-header"><span class="card-label">Last Sync</span><i class="fas fa-clock card-icon"></i></div><div class="metric" style="font-size: 28px;" id="timeVal">--:--</div><div class="unit">Live Data</div></div>
-            <div class="card card-feed"><div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div><div class="video-container"><div class="rec-badge"><div class="rec-dot"></div> REC</div><img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');"><div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div></div><div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div></div>
+
+            <!-- FEED & LOGS -->
+            <div class="card card-feed">
+                <div class="card-header"><span class="card-label">Live Visual Feed</span> <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">CAM-01</span></div>
+                <div class="video-container">
+                    <div class="rec-badge"><div class="rec-dot"></div> REC</div>
+                    <img id="liveFeed" class="live-feed-img" src="" style="display:none;" onload="this.style.display='block'; safeSetDisplay('vPlace', 'none');">
+                    <div id="vPlace" class="video-placeholder"><i class="fas fa-video-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><span style="font-size: 12px;">Waiting...</span></div>
+                </div>
+                <div style="font-size: 11px; color: #666; text-align: right; margin-top: 8px;" id="feedTime">Last Frame: --</div>
+            </div>
             <div class="card card-logs"><div class="card-header"><span class="card-label">Detected Signs</span> <i class="fas fa-align-left card-icon"></i></div><div class="log-terminal" id="camText"><div class="log-entry"><span class="log-marker">></span> System Initialized...</div></div></div>
             <div class="card card-map"><div id="map"></div><div class="map-toggle-btn" onclick="toggleMapTheme()" id="btn-map-mode"><i class="fas fa-adjust"></i> Map Mode</div><button class="map-overlay-btn" onclick="getDirections()"><i class="fas fa-directions"></i> <span id="btn-dir">Get Directions</span></button></div>
         </div>
@@ -195,24 +229,41 @@
             } catch(e) {}
         }
 
-        // --- SOS LOGIC (Siren + Auto Email) ---
+        // --- SYSTEM START ---
+        let audioEnabled = false;
+        function startSystem() {
+            document.getElementById('startOverlay').style.display = 'none';
+            audioEnabled = true;
+            window.speechSynthesis.getVoices(); // Warm up TTS
+        }
+
+        // --- SOS LOGIC ---
         let lastEmailSent = 0;
         
-        // Load Voices
-        let voices = [];
-        window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
-
         function triggerSOS(lat, lng) {
             const now = Date.now();
             document.getElementById('sosModal').style.display = 'flex';
             
-            // 1. PLAY SIREN
+            // 1. SIREN
             const siren = document.getElementById('sirenAudio');
-            if (siren.paused) {
-                siren.play().catch(e => console.log("Audio blocked, click to play"));
+            if (siren.paused && audioEnabled) siren.play().catch(e => console.log("Audio Blocked"));
+
+            // 2. VOICE (Fixed to Normal Pitch)
+            if (audioEnabled && !window.speechSynthesis.speaking) {
+                const msg = new SpeechSynthesisUtterance("Emergency! Fall Detected! Please check the user!");
+                
+                // Use natural voice if available
+                const voices = window.speechSynthesis.getVoices();
+                const bestVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Zira'));
+                if (bestVoice) msg.voice = bestVoice;
+
+                msg.rate = 1.1; // Fast but clear
+                msg.pitch = 1.0; // NORMAL PITCH (Not funny)
+                msg.volume = 1.0;
+                window.speechSynthesis.speak(msg);
             }
 
-            // 2. SEND EMAIL (Debounced to 5 seconds to prevent spam, but fast for testing)
+            // 3. EMAIL (Force Send for Test)
             if (now - lastEmailSent > 5000) {
                 lastEmailSent = now;
                 const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
@@ -226,12 +277,12 @@
                 
                 emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, params)
                     .then(() => {
-                        console.log("Email Sent Successfully!");
-                        alert("📧 ALERT EMAIL SENT TO GUARDIAN!"); // VISUAL FEEDBACK
+                        console.log("Email Sent!");
+                        alert("📧 EMAIL SENT to Guardian!"); 
                     })
                     .catch((err) => {
-                        console.error("Email Failed", err);
-                        alert("Email Failed: " + JSON.stringify(err));
+                        console.error(err);
+                        alert("Email Error: " + JSON.stringify(err));
                     });
             }
         }
@@ -239,6 +290,7 @@
         function closeSos() { 
             document.getElementById('sosModal').style.display = 'none'; 
             document.getElementById('sirenAudio').pause();
+            window.speechSynthesis.cancel();
         }
         function openAbout() { document.getElementById('aboutModal').style.display = 'flex'; setTimeout(() => document.getElementById('aboutModal').style.opacity = '1', 10); }
         function closeAbout() { document.getElementById('aboutModal').style.opacity = '0'; setTimeout(() => document.getElementById('aboutModal').style.display = 'none', 300); }
@@ -273,7 +325,9 @@
                 triggerSOS(data.lat || 0, data.lon || 0);
             } else {
                 safeSetDisplay("fallAlert", "none");
-                document.getElementById('sirenAudio').pause(); // Auto-stop if stick picked up
+                if(document.getElementById('sosModal').style.display === 'none') {
+                    document.getElementById('sirenAudio').pause();
+                }
             }
 
             safeSetDisplay("obsAlert", (data.distance < 300) ? "block" : "none");
